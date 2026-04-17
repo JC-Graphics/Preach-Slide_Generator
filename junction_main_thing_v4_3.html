@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Junction — Keep The Main Thing</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=League+Gothic&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0a0a; color:white; font-family:'Montserrat',sans-serif; }
+
+/* ── HEADER ── */
+.hdr {
+  padding:16px 32px; border-bottom:1px solid #1a1a1a;
+  display:flex; align-items:center; gap:14px;
+  background:#0a0a0a; position:sticky; top:0; z-index:200;
+}
+.jbadge { background:#FFD400; color:#000; font-family:'Anton',sans-serif; font-size:11px; letter-spacing:3px; padding:5px 12px; border-radius:3px; }
+.hdr-text h1 { font-family:'Anton',sans-serif; font-size:15px; letter-spacing:3px; outline:none; cursor:text; padding:2px 6px; margin:-2px -6px; border-radius:3px; transition:background .15s, box-shadow .15s; }
+.hdr-text h1:hover { background:#141414; box-shadow:inset 0 0 0 1px #222; }
+.hdr-text h1:focus { background:#141414; box-shadow:inset 0 0 0 1px #FFD400; }
+.hdr-text p { font-size:10px; color:#444; letter-spacing:2px; margin-top:2px; }
+.safe-badge { margin-left:auto; background:#1a2a1a; border:1px solid #2a4a2a; border-radius:20px; padding:5px 14px; font-size:10px; font-weight:700; letter-spacing:2px; color:#4CAF50; }
+
+/* ── TABS ── */
+.tabs { display:flex; border-bottom:1px solid #1a1a1a; background:#0d0d0d; overflow-x:auto; }
+.stab { padding:13px 22px; font-size:10px; font-weight:700; letter-spacing:2px; color:#444; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; transition:all .2s; }
+.stab:hover { color:#888; }
+.stab.on { color:#FFD400; border-bottom-color:#FFD400; }
+
+/* ── LAYOUT ── */
+.wrap { display:grid; grid-template-columns:230px 1fr; min-height:calc(100vh - 98px); }
+
+/* ── SIDEBAR ── */
+.sb { background:#0d0d0d; border-right:1px solid #1a1a1a; padding:18px; position:sticky; top:98px; height:calc(100vh - 98px); overflow-y:auto; }
+.sbl { font-size:9px; font-weight:700; letter-spacing:3px; color:#333; text-transform:uppercase; margin:16px 0 8px; }
+.sbl:first-child { margin-top:0; }
+
+.acc-row { display:flex; flex-wrap:wrap; gap:7px; }
+.asw { width:28px; height:28px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:all .15s; flex-shrink:0; }
+.asw:hover { transform:scale(1.15); }
+.asw.on { border-color:white; }
+
+.vbtn { width:100%; text-align:left; background:#141414; border:2px solid #1e1e1e; border-radius:5px; padding:9px 12px; color:#555; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:1px; cursor:pointer; margin-bottom:5px; transition:all .15s; }
+.vbtn:hover { border-color:#333; color:#aaa; }
+.vbtn.on { border-color:#FFD400; color:white; background:#181818; }
+
+.sbtab { flex:1; background:#141414; border:2px solid #1e1e1e; border-radius:5px; padding:7px 4px; color:#555; font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; cursor:pointer; transition:all .15s; }
+.sbtab:hover { color:#aaa; border-color:#333; }
+.sbtab.on { border-color:#FFD400; color:#FFD400; background:#181818; }
+
+.egroup { margin-bottom:8px; }
+.elabel { display:block; font-size:8px; font-weight:700; letter-spacing:2px; color:#333; text-transform:uppercase; margin-bottom:4px; }
+.einput { width:100%; background:#141414; border:1px solid #222; border-radius:4px; padding:7px 9px; color:#ccc; font-family:'Montserrat',sans-serif; font-size:10px; line-height:1.4; resize:vertical; outline:none; transition:border-color .15s; }
+.einput:focus { border-color:#555; color:white; }
+.etarea { resize:vertical; min-height:60px; }
+
+.dlbtn { width:100%; background:#FFD400; color:#000; border:none; border-radius:5px; padding:11px; font-family:'Anton',sans-serif; font-size:12px; letter-spacing:2px; cursor:pointer; margin-top:14px; transition:opacity .2s; }
+.dlbtn:hover { opacity:.85; }
+.dlbtn.sec { background:#1a1a1a; color:#888; margin-top:6px; border:1px solid #222; }
+
+.zone-legend { background:#141414; border:1px solid #1e1e1e; border-radius:5px; padding:12px; margin-top:12px; }
+.zone-legend p { font-size:10px; color:#555; line-height:1.7; }
+.zone-legend strong { color:#FFD400; }
+.zone-legend .green { color:#4CAF50; }
+
+/* ── MAIN ── */
+.main { padding:28px 32px; overflow-y:auto; }
+.plabel { font-size:9px; font-weight:700; letter-spacing:4px; color:#2a2a2a; text-transform:uppercase; margin-bottom:14px; }
+
+/* Slide panels */
+.spanel { display:none; }
+.spanel.on { display:block; }
+
+/* ── THE SLIDE ITSELF ── */
+.slide-outer {
+  width:100%; max-width:900px;
+  aspect-ratio:16/10;
+  position:relative; overflow:hidden;
+  border-radius:3px;
+  box-shadow: 0 0 0 1px #1e1e1e, 0 20px 60px rgba(0,0,0,.8);
+  margin-bottom:20px;
+}
+
+/* Zone overlay toggle */
+.zone-btn { background:#1a1a1a; border:1px solid #252525; color:#555; border-radius:4px; padding:6px 14px; font-size:9px; font-weight:700; letter-spacing:2px; cursor:pointer; margin-bottom:16px; transition:all .15s; }
+.zone-btn:hover { color:#aaa; border-color:#333; }
+.zone-btn.on { background:#1a2a1a; border-color:#2a4a2a; color:#4CAF50; }
+
+/* Zone overlay */
+.zone-overlay { position:absolute; inset:0; pointer-events:none; z-index:50; display:none; }
+.zone-overlay.show { display:block; }
+.zone-safe-top { position:absolute; top:0; left:0; right:0; height:40%; background:rgba(76,175,80,.08); border-bottom:2px dashed rgba(76,175,80,.4); }
+.zone-preacher { position:absolute; top:40%; left:25%; right:25%; bottom:0; background:rgba(255,0,0,.06); border-left:2px dashed rgba(255,80,80,.3); border-right:2px dashed rgba(255,80,80,.3); }
+.zone-side-l { position:absolute; top:40%; left:0; width:25%; bottom:0; background:rgba(76,175,80,.05); border-right:1px dashed rgba(76,175,80,.2); }
+.zone-side-r { position:absolute; top:40%; right:0; width:25%; bottom:0; background:rgba(76,175,80,.05); border-left:1px dashed rgba(76,175,80,.2); }
+.zone-label { position:absolute; font-size:8px; font-weight:700; letter-spacing:2px; text-transform:uppercase; }
+.ztop { top:2%; left:50%; transform:translateX(-50%); color:rgba(76,175,80,.7); }
+.zpreach { top:50%; left:50%; transform:translate(-50%,-50%); color:rgba(255,100,100,.6); text-align:center; }
+.zside { top:50%; color:rgba(76,175,80,.5); }
+.zsl { left:2%; }
+.zsr { right:2%; }
+
+/* ── CANVAS (all slide backgrounds drawn here) ── */
+canvas.bgc { position:absolute; inset:0; width:100%; height:100%; }
+
+/* ── SLIDE CONTENT LAYERS ── */
+.sc { position:absolute; inset:0; z-index:10; }
+
+/* BIG ATMOSPHERIC TYPE — bleeds, preacher-proof */
+.atmo-word {
+  position:absolute;
+  font-family:'Anton',sans-serif;
+  text-transform:uppercase;
+  line-height:1;
+  user-select:none;
+  pointer-events:none;
+}
+
+/* ── SCRIPTURE CONTENT (top zone) ── */
+.top-content {
+  position:absolute;
+  top:0; left:0; right:0;
+  padding:4% 6% 3.5%;
+  z-index:20;
+}
+.tc-inner {
+  border-left:5px solid #FFD400;
+  padding-left:18px;
+  background:linear-gradient(90deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.15) 100%);
+  padding-top:10px;
+  padding-bottom:10px;
+  padding-right:12px;
+  border-radius:0 4px 4px 0;
+  backdrop-filter:blur(4px);
+}
+.tc-eyebrow {
+  font-size:clamp(7px,.85vw,10px);
+  font-weight:700;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.tc-verse {
+  font-size:clamp(11px,1.7vw,19px);
+  font-weight:700;
+  line-height:1.4;
+  color:white;
+}
+.tc-ref {
+  font-family:'Anton',sans-serif;
+  font-size:clamp(9px,1.2vw,14px);
+  letter-spacing:4px;
+  margin-top:6px;
+}
+
+/* SERIES TITLE SLIDE content */
+.title-content {
+  position:absolute;
+  top:0; left:0; right:0;
+  padding:5% 6%;
+  z-index:20;
+}
+.series-micro {
+  font-size:clamp(7px,.8vw,9px);
+  font-weight:700;
+  letter-spacing:6px;
+  text-transform:uppercase;
+  opacity:.45;
+  margin-bottom:8px;
+}
+.title-big {
+  font-family:'Anton',sans-serif;
+  font-size:clamp(22px,5.5vw,64px);
+  line-height:.9;
+  text-transform:uppercase;
+}
+.title-sub {
+  font-size:clamp(7px,.85vw,10px);
+  font-weight:700;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  opacity:.35;
+  margin-top:14px;
+}
+
+/* POINT content (top zone) */
+.point-content {
+  position:absolute;
+  top:0; left:0; right:0;
+  padding:4% 6%;
+  z-index:20;
+}
+.pt-label {
+  font-size:clamp(7px,.8vw,9px);
+  font-weight:700;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  margin-bottom:6px;
+  opacity:.6;
+}
+.pt-text {
+  font-family:'League Gothic',sans-serif;
+  font-size:clamp(20px,4.8vw,56px);
+  text-transform:uppercase;
+  line-height:.92;
+}
+
+/* QUOTE content (top zone) */
+.quote-content {
+  position:absolute;
+  top:0; left:0; right:0;
+  padding:4% 6%;
+  z-index:20;
+}
+.qm {
+  font-family:'Anton',sans-serif;
+  font-size:clamp(30px,5vw,60px);
+  line-height:.7;
+  opacity:.2;
+  margin-bottom:4px;
+}
+.qt {
+  font-size:clamp(11px,1.65vw,18px);
+  font-weight:700;
+  line-height:1.45;
+  font-style:italic;
+}
+.qa {
+  font-size:clamp(7px,.8vw,9px);
+  font-weight:700;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  opacity:.4;
+  margin-top:8px;
+}
+
+/* Series watermark bottom corner */
+.series-watermark {
+  position:absolute;
+  bottom:4%; right:5%;
+  z-index:20;
+  text-align:right;
+  opacity:.5;
+}
+.sw-line { width:40px; height:2px; background:white; margin-bottom:6px; margin-left:auto; }
+.sw-text { font-family:'Anton',sans-serif; font-size:clamp(7px,.8vw,9px); letter-spacing:3px; text-transform:uppercase; }
+
+/* ── TIPS ── */
+.tips { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; max-width:900px; margin-top:4px; }
+.tip { background:#111; border:1px solid #1a1a1a; border-radius:6px; padding:14px; }
+.tip-icon { font-size:16px; margin-bottom:6px; }
+.tip-title { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
+.tip-text { font-size:10px; color:#555; line-height:1.6; }
+
+/* ── PROPRESENTER GUIDE ── */
+.guide { max-width:900px; margin-top:24px; display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.gcard { background:#111; border:1px solid #1a1a1a; border-radius:6px; padding:16px; }
+.gcard h4 { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#FFD400; margin-bottom:8px; }
+.gcard p { font-size:10px; color:#555; line-height:1.7; }
+.gcard strong { color:#aaa; }
+
+/* ── PHOTO UPLOAD DROP ZONE ── */
+.photo-drop {
+  border:2px dashed #2a2a2a; border-radius:6px; padding:14px 10px;
+  text-align:center; cursor:pointer; margin-bottom:5px;
+  transition:all .2s; position:relative; overflow:hidden;
+}
+.photo-drop:hover { border-color:#444; }
+.photo-drop.active { border-color:#FFD400; background:rgba(255,212,0,.06); }
+.photo-drop.on { border-color:#FFD400; border-style:solid; }
+.photo-drop input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.photo-drop .pd-label { font-size:10px; font-weight:700; letter-spacing:1px; color:#555; pointer-events:none; }
+.photo-drop .pd-hint { font-size:8px; color:#333; letter-spacing:1px; margin-top:3px; pointer-events:none; }
+.photo-drop .pd-thumb { max-width:100%; max-height:60px; border-radius:3px; margin-top:6px; pointer-events:none; }
+.photo-clear { width:100%; background:#1a1a1a; border:1px solid #222; border-radius:4px; padding:6px; color:#888; font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; cursor:pointer; margin-bottom:5px; display:none; transition:all .15s; }
+.photo-clear:hover { border-color:#ff4444; color:#ff4444; }
+
+/* ── MULTI-POINT UI ── */
+.pt-nav { display:flex; align-items:center; gap:8px; margin-bottom:14px; max-width:900px; }
+.pt-nav-btn { background:#1a1a1a; border:1px solid #252525; color:#666; border-radius:4px; padding:6px 12px; font-size:11px; font-weight:700; cursor:pointer; transition:all .15s; font-family:'Montserrat',sans-serif; }
+.pt-nav-btn:hover { color:#fff; border-color:#444; }
+.pt-nav-btn:disabled { opacity:.3; cursor:default; }
+.pt-nav-label { font-size:10px; font-weight:700; letter-spacing:2px; color:#555; text-transform:uppercase; }
+.pt-add-btn { background:#1a2a1a; border:1px solid #2a4a2a; color:#4CAF50; border-radius:4px; padding:5px 12px; font-size:10px; font-weight:700; letter-spacing:1px; cursor:pointer; font-family:'Montserrat',sans-serif; transition:all .15s; }
+.pt-add-btn:hover { background:#2a3a2a; border-color:#4a6a4a; }
+.pt-rm-btn { background:#2a1a1a; border:1px solid #4a2a2a; color:#ff6b6b; border-radius:4px; padding:5px 10px; font-size:10px; font-weight:700; cursor:pointer; font-family:'Montserrat',sans-serif; transition:all .15s; }
+.pt-rm-btn:hover { background:#3a1a1a; border-color:#6a3a3a; }
+.pt-group { border:1px solid #1e1e1e; border-radius:5px; padding:10px; margin-bottom:8px; background:#0f0f0f; position:relative; }
+.pt-group-hdr { font-size:9px; font-weight:700; letter-spacing:2px; color:#FFD400; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="jbadge">JUNCTION</div>
+  <div class="hdr-text">
+    <h1 contenteditable="true" spellcheck="false" title="Click to edit series title" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">KEEP THE MAIN THING THE MAIN THING</h1>
+    <p>SERIES ARTWORK · PREACHER-SAFE ZONES · 16:10 · PROPRESENTER</p>
+  </div>
+  <div class="safe-badge">✓ PREACHER SAFE</div>
+</div>
+
+<div class="tabs">
+  <div class="stab on" onclick="showTab('scripture',this)">📖 Scripture</div>
+  <div class="stab" onclick="showTab('title',this)">🎯 Series Title</div>
+  <div class="stab" onclick="showTab('point',this)">💡 Point Header</div>
+  <div class="stab" onclick="showTab('quote',this)">💬 Quote</div>
+  <div class="stab" onclick="showTab('guide',this)">📋 ProPresenter Guide</div>
+</div>
+
+<div class="wrap">
+
+  <!-- SIDEBAR -->
+  <div class="sb">
+    <!-- Sidebar tab switcher -->
+    <div style="display:flex;gap:4px;margin-bottom:14px;">
+      <button id="sbTabStyle" class="sbtab on" onclick="showSbTab('style')">🎨 STYLE</button>
+      <button id="sbTabEdit" class="sbtab" onclick="showSbTab('edit')">✏️ TEXT</button>
+    </div>
+
+    <!-- ── STYLE PANEL ── -->
+    <div id="sbStyle">
+      <div class="sbl">Background</div>
+      <button class="vbtn on" onclick="setBG('aurora',this)">🌌 Aurora Mesh</button>
+      <button class="vbtn" onclick="setBG('topography',this)">🗺️ Scripture Topography</button>
+      <button class="vbtn" onclick="setBG('molten',this)">🔥 Molten Metal</button>
+      <button class="vbtn" onclick="setBG('brushstroke',this)">🎨 Dark Brushstroke</button>
+      <button class="vbtn" onclick="setBG('watercolour',this)">💧 Watercolour Wash</button>
+      <button class="vbtn" onclick="setBG('linen',this)">🕊️ Woven Linen</button>
+      <button class="vbtn" onclick="setBG('canvas',this)">🖼️ Painted Canvas</button>
+      <button class="vbtn" onclick="setBG('parchment',this)">📜 Soft Parchment</button>
+      <button class="vbtn" onclick="setBG('morningsky',this)">🌤️ Morning Sky</button>
+
+      <div class="sbl">Or Upload Photo</div>
+      <div class="photo-drop" id="photoDrop" ondragover="event.preventDefault();this.classList.add('active')" ondragleave="this.classList.remove('active')" ondrop="event.preventDefault();this.classList.remove('active');handlePhotoDrop(event)">
+        <input type="file" accept="image/*" id="photoInput" onchange="handlePhotoSelect(this)">
+        <div class="pd-label" id="pdLabel">📷 DROP IMAGE OR CLICK</div>
+        <div class="pd-hint">JPG / PNG — used as slide background</div>
+        <img class="pd-thumb" id="pdThumb" style="display:none">
+      </div>
+      <button class="photo-clear" id="photoClear" onclick="clearPhoto()">✕ REMOVE PHOTO</button>
+
+      <div class="sbl">Accent Colour</div>
+      <div class="acc-row">
+        <div class="asw on" style="background:#FFD400" onclick="setAccent('#FFD400',this)" title="Yellow"></div>
+        <div class="asw" style="background:#FF2D78" onclick="setAccent('#FF2D78',this)" title="Pink"></div>
+        <div class="asw" style="background:#00E5D4" onclick="setAccent('#00E5D4',this)" title="Cyan"></div>
+        <div class="asw" style="background:#FF5A1F" onclick="setAccent('#FF5A1F',this)" title="Orange"></div>
+        <div class="asw" style="background:#7B3FE4" onclick="setAccent('#7B3FE4',this)" title="Purple"></div>
+        <div class="asw" style="background:#ffffff" onclick="setAccent('#ffffff',this)" title="White"></div>
+      </div>
+
+      <div class="sbl">Intensity</div>
+      <div style="display:flex;gap:6px;">
+        <button class="vbtn" style="flex:1;margin-bottom:0;padding:7px 4px;text-align:center" onclick="setDark(0.5,this)">LIGHT</button>
+        <button class="vbtn on" style="flex:1;margin-bottom:0;padding:7px 4px;text-align:center" onclick="setDark(0.68,this)">MED</button>
+        <button class="vbtn" style="flex:1;margin-bottom:0;padding:7px 4px;text-align:center" onclick="setDark(0.82,this)">DARK</button>
+      </div>
+
+      <div class="zone-legend" style="margin-top:12px;">
+        <p>
+          <strong>📐 SAFE ZONES:</strong><br>
+          <span class="green">✓ Top 40%</span> — always visible<br>
+          <span style="color:#ff6b6b">✗ Centre lower 60%</span> — preacher zone
+        </p>
+      </div>
+    </div>
+
+    <!-- ── EDIT TEXT PANEL ── -->
+    <div id="sbEdit" style="display:none;">
+
+      <div class="sbl" style="margin-top:0">📖 Scripture</div>
+      <div class="egroup">
+        <label class="elabel">Label</label>
+        <input class="einput" id="e_eyebrow" value="Scripture" oninput="updateText()">
+      </div>
+      <div class="egroup">
+        <label class="elabel">Verse text</label>
+        <textarea class="einput etarea" id="e_verse" rows="4" oninput="updateText()">"For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."</textarea>
+      </div>
+      <div class="egroup">
+        <label class="elabel">Reference</label>
+        <input class="einput" id="e_ref" value="John 3:16" oninput="updateText()">
+      </div>
+
+      <div class="sbl">🎯 Series Title</div>
+      <div class="egroup">
+        <label class="elabel">Series name</label>
+        <input class="einput" id="e_seriesName" value="Keep The" oninput="updateText()">
+      </div>
+      <div class="egroup">
+        <label class="elabel">Accent word</label>
+        <input class="einput" id="e_seriesAccent" value="Main Thing" oninput="updateText()">
+      </div>
+      <div class="egroup">
+        <label class="elabel">Third line</label>
+        <input class="einput" id="e_seriesLine3" value="The Main Thing" oninput="updateText()">
+      </div>
+      <div class="egroup">
+        <label class="elabel">Speaker / date</label>
+        <input class="einput" id="e_speaker" value="PS ROY TODD · SUNDAY 10AM" oninput="updateText()">
+      </div>
+
+      <div class="sbl" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>💡 Points (<span id="ptCountLabel">1</span>)</span>
+        <button class="pt-add-btn" onclick="addPoint()">+ ADD</button>
+      </div>
+      <div id="pointFieldsContainer">
+        <!-- dynamically rendered by renderPointFields() -->
+      </div>
+
+      <div class="sbl">💬 Quote</div>
+      <div class="egroup">
+        <label class="elabel">Quote text</label>
+        <textarea class="einput etarea" id="e_quote" rows="3" oninput="updateText()">"The main thing is to keep the main thing the main thing — and the main thing is Jesus."</textarea>
+      </div>
+      <div class="egroup">
+        <label class="elabel">Attribution</label>
+        <input class="einput" id="e_quoteAuthor" value="— PS ROY TODD" oninput="updateText()">
+      </div>
+
+      <div class="sbl">🔖 Watermark</div>
+      <div class="egroup">
+        <label class="elabel">Series watermark</label>
+        <input class="einput" id="e_watermark" value="Keep The Main Thing" oninput="updateText()">
+      </div>
+    </div>
+
+    <button class="dlbtn" onclick="downloadSlide()">⬇ SAVE AS PNG</button>
+    <button class="dlbtn sec" onclick="downloadAll()">⬇ SAVE ALL SLIDES</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- ═══ SCRIPTURE PANEL ═══ -->
+    <div class="spanel on" id="tab-scripture">
+      <p class="plabel">SCRIPTURE SLIDE · ALL TEXT IN TOP SAFE ZONE</p>
+
+      <button class="zone-btn on" id="zoneToggle" onclick="toggleZone()">◉ SHOW SAFE ZONES</button>
+
+      <div class="slide-outer" id="mainSlide">
+        <canvas class="bgc" id="mainCanvas" width="1920" height="1200"></canvas>
+
+        <!-- Atmospheric background type — preacher proof, it's TEXTURE -->
+        <div class="sc" id="atmoLayer">
+          <!-- drawn by JS per bg style -->
+        </div>
+
+        <!-- TOP ZONE: scripture text -->
+        <div class="top-content">
+          <div class="tc-inner" id="tcInner" style="border-left-color:#FFD400">
+            <div class="tc-eyebrow" id="tcEyebrow" style="color:#FFD400">Scripture</div>
+            <div class="tc-verse" id="tcVerse">"For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."</div>
+            <div class="tc-ref" id="tcRef" style="color:#FFD400">John 3:16</div>
+          </div>
+        </div>
+
+        <!-- Series watermark -->
+        <div class="series-watermark">
+          <div class="sw-line"></div>
+          <div class="sw-text">Keep The Main Thing</div>
+        </div>
+
+        <!-- Zone overlay -->
+        <div class="zone-overlay show" id="zoneOverlay">
+          <div class="zone-safe-top"></div>
+          <div class="zone-preacher"></div>
+          <div class="zone-side-l"></div>
+          <div class="zone-side-r"></div>
+          <div class="zone-label ztop">✓ SAFE ZONE — TEXT HERE</div>
+          <div class="zone-label zpreach">PREACHER<br>ZONE<br>⚠️</div>
+          <div class="zone-label zside zsl" style="transform:rotate(-90deg);transform-origin:left center;white-space:nowrap;left:8%">SIDE SAFE</div>
+          <div class="zone-label zside zsr" style="transform:rotate(90deg);transform-origin:right center;white-space:nowrap;right:8%">SIDE SAFE</div>
+        </div>
+      </div>
+
+      <div class="tips">
+        <div class="tip">
+          <div class="tip-icon">🔥</div>
+          <div class="tip-title" style="color:#FFD400">Atmospheric BG</div>
+          <div class="tip-text">The giant "MAIN" text bleeding off the edges is <em>texture</em>, not content. Even when the preacher blocks it, the slide still looks stunning.</div>
+        </div>
+        <div class="tip">
+          <div class="tip-icon">📐</div>
+          <div class="tip-title" style="color:#4CAF50">Top Zone Rule</div>
+          <div class="tip-text">ALL readable content sits in the top 38-40% of screen — above the preacher's head. This is non-negotiable for every slide type.</div>
+        </div>
+        <div class="tip">
+          <div class="tip-icon">📺</div>
+          <div class="tip-title" style="color:#00E5D4">Stream Safe</div>
+          <div class="tip-text">Dark background + bold contrast text = zero blur on stream. The warm amber and dark overlays are optimised for compression.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TITLE PANEL ═══ -->
+    <div class="spanel" id="tab-title">
+      <p class="plabel">SERIES TITLE SLIDE · EDITORIAL LEVEL</p>
+      <button class="zone-btn on" id="zoneTitleToggle" onclick="toggleZoneTitle()">◉ SHOW SAFE ZONES</button>
+
+      <div class="slide-outer" id="titleSlide">
+        <canvas class="bgc" id="titleCanvas" width="1920" height="1200"></canvas>
+        <div class="sc" id="titleAtmo"></div>
+
+        <!-- TOP ZONE: title -->
+        <div class="title-content">
+          <div class="series-micro">Junction Church · Series</div>
+          <div class="title-big">
+            Keep The<br>
+            <span id="titleAccent" style="color:#FFD400">Main Thing</span><br>
+            The Main Thing
+          </div>
+          <div class="title-sub">PS ROY TODD · SUNDAY 10AM</div>
+        </div>
+
+        <div class="series-watermark">
+          <div class="sw-line"></div>
+          <div class="sw-text">Keep The Main Thing</div>
+        </div>
+
+        <div class="zone-overlay show" id="zoneTitleOverlay">
+          <div class="zone-safe-top"></div>
+          <div class="zone-preacher"></div>
+          <div class="zone-side-l"></div>
+          <div class="zone-side-r"></div>
+          <div class="zone-label ztop">✓ SAFE ZONE</div>
+          <div class="zone-label zpreach">PREACHER<br>ZONE ⚠️</div>
+        </div>
+      </div>
+
+      <div class="tips">
+        <div class="tip">
+          <div class="tip-icon">🎯</div>
+          <div class="tip-title" style="color:#FFD400">Series Artwork</div>
+          <div class="tip-text">This title slide has full editorial-level design. Use it as the opener before the message and between videos.</div>
+        </div>
+        <div class="tip">
+          <div class="tip-icon">🔄</div>
+          <div class="tip-title" style="color:#FF2D78">Weekly Reuse</div>
+          <div class="tip-text">Keep the background and layout. Just update the speaker name each week. Consistent series identity every Sunday.</div>
+        </div>
+        <div class="tip">
+          <div class="tip-icon">📺</div>
+          <div class="tip-title" style="color:#00E5D4">Stream opener</div>
+          <div class="tip-text">Works brilliantly as the stream holding slide before service starts — it looks like a proper TV broadcast opener.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ POINT PANEL ═══ -->
+    <div class="spanel" id="tab-point">
+      <p class="plabel">POINT HEADER · TOP ZONE ONLY</p>
+
+      <div class="pt-nav">
+        <button class="pt-nav-btn" id="ptPrev" onclick="navPoint(-1)">◀</button>
+        <span class="pt-nav-label" id="ptNavLabel">POINT 1 / 1</span>
+        <button class="pt-nav-btn" id="ptNext" onclick="navPoint(1)">▶</button>
+        <button class="zone-btn on" id="zonePointToggle" onclick="toggleZonePoint()" style="margin-left:auto">◉ SHOW SAFE ZONES</button>
+      </div>
+
+      <div class="slide-outer" id="pointSlide">
+        <canvas class="bgc" id="pointCanvas" width="1920" height="1200"></canvas>
+        <div class="sc" id="pointAtmo"></div>
+
+        <!-- TOP ZONE: point -->
+        <div class="point-content">
+          <div class="pt-label" id="ptLabel" style="color:#FFD400">Point 01 —</div>
+          <div class="pt-text">
+            Keep the<br>
+            <span id="ptAccent" style="color:#FFD400">MAIN THING</span><br>
+            the main thing
+          </div>
+        </div>
+
+        <div class="series-watermark">
+          <div class="sw-line"></div>
+          <div class="sw-text">Keep The Main Thing</div>
+        </div>
+
+        <div class="zone-overlay show" id="zonePointOverlay">
+          <div class="zone-safe-top"></div>
+          <div class="zone-preacher"></div>
+          <div class="zone-side-l"></div>
+          <div class="zone-side-r"></div>
+          <div class="zone-label ztop">✓ SAFE ZONE</div>
+          <div class="zone-label zpreach">PREACHER<br>ZONE ⚠️</div>
+        </div>
+      </div>
+
+      <div class="tips">
+        <div class="tip">
+          <div class="tip-icon">💡</div>
+          <div class="tip-title" style="color:#FFD400">Point Numbers</div>
+          <div class="tip-text">The giant ghost number in the background tells the congregation where you are without competing with the readable text.</div>
+        </div>
+        <div class="tip">
+          <div class="tip-icon">🎨</div>
+          <div class="tip-title" style="color:#FF2D78">Key Word</div>
+          <div class="tip-text">Only highlight ONE phrase per point in your accent colour. Everything else white. That one word is what they'll remember.</div>
+        </div>
+        <div class="tip">
+          <div class="tip-icon">📐</div>
+          <div class="tip-title" style="color:#4CAF50">Safe Zone</div>
+          <div class="tip-text">Point text fully in the top 38%. The atmospheric background art fills the lower 62% — beautiful even when blocked.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ QUOTE PANEL ═══ -->
+    <div class="spanel" id="tab-quote">
+      <p class="plabel">QUOTE SLIDE · TOP ZONE ONLY</p>
+      <button class="zone-btn on" id="zoneQuoteToggle" onclick="toggleZoneQuote()">◉ SHOW SAFE ZONES</button>
+
+      <div class="slide-outer" id="quoteSlide">
+        <canvas class="bgc" id="quoteCanvas" width="1920" height="1200"></canvas>
+        <div class="sc" id="quoteAtmo"></div>
+
+        <!-- TOP ZONE: quote -->
+        <div class="quote-content">
+          <div class="qm" id="qMark" style="color:#FFD400">"</div>
+          <div class="qt">"The main thing is to keep the main thing the main thing — and the main thing is Jesus."</div>
+          <div class="qa">— PS ROY TODD</div>
+        </div>
+
+        <div class="series-watermark">
+          <div class="sw-line"></div>
+          <div class="sw-text">Keep The Main Thing</div>
+        </div>
+
+        <div class="zone-overlay show" id="zoneQuoteOverlay">
+          <div class="zone-safe-top"></div>
+          <div class="zone-preacher"></div>
+          <div class="zone-side-l"></div>
+          <div class="zone-side-r"></div>
+          <div class="zone-label ztop">✓ SAFE ZONE</div>
+          <div class="zone-label zpreach">PREACHER<br>ZONE ⚠️</div>
+        </div>
+      </div>
+
+      <div class="tips">
+        <div class="tip">
+          <div class="tip-icon">💬</div>
+          <div class="tip-title" style="color:#FFD400">Quote Length</div>
+          <div class="tip-text">Keep quotes to 2-3 lines in the top zone. If it's longer, split into two slides. Readability over completeness.</div>
+        </div>
+        <div class="tip">
+          <div class="tip-icon">🔥</div>
+          <div class="tip-title" style="color:#FF2D78">Background Art</div>
+          <div class="tip-text">The atmospheric word art in the lower zone makes the slide look editorial even with minimal text in the safe zone.</div>
+        </div>
+        <div class="tip">
+          <div class="tip-icon">📺</div>
+          <div class="tip-title" style="color:#00E5D4">Stream impact</div>
+          <div class="tip-text">Quote slides land HARD on stream because the camera captures the full slide — top zone text + full background. Stunning.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ GUIDE PANEL ═══ -->
+    <div class="spanel" id="tab-guide">
+      <p class="plabel">PROPRESENTER BUILD GUIDE</p>
+      <div class="guide">
+        <div class="gcard">
+          <h4>📐 The Core Principle</h4>
+          <p>Every slide has two distinct layers:<br><br>
+          <strong>Layer 1 — Background Art:</strong> Fills the whole screen. Giant atmospheric type, textures, gradients. This is DECORATION — it's OK if the preacher blocks it.<br><br>
+          <strong>Layer 2 — Content:</strong> Always sits in the top 38-40% of the screen. Scripture, points, quotes. ALWAYS above the preacher's head.</p>
+        </div>
+        <div class="gcard">
+          <h4>🏗️ Building in ProPresenter</h4>
+          <p>
+          1. Import background PNG (download from here)<br>
+          2. Add text box for content — set it to <strong>top 38% of slide only</strong> — lock it there<br>
+          3. Add left accent bar (thin rectangle, accent colour, full height of content area)<br>
+          4. Save as a <strong>Master Slide</strong> in your theme<br>
+          5. Each Sunday: duplicate master, update text only<br><br>
+          <strong>Total weekly build time: under 10 minutes.</strong>
+          </p>
+        </div>
+        <div class="gcard">
+          <h4>🔥 Background Art Strategy</h4>
+          <p>
+          The giant "MAIN" / atmospheric text in the background is what makes it look like series artwork. Here's how to get it in ProPresenter:<br><br>
+          • Download the PNG backgrounds from this tool<br>
+          • OR in ProPresenter, add a text box with giant Anton font text, set to <strong>5% opacity</strong>, position it in the lower 60%<br>
+          • Size it so it bleeds off the edges — that's the editorial look<br>
+          • It will look incredible on camera even when the preacher stands in front
+          </p>
+        </div>
+        <div class="gcard">
+          <h4>📺 Stream Considerations</h4>
+          <p>
+          With the preacher in front of the lower zone, the <strong>camera actually helps you</strong> — it frames the preacher against the atmospheric background art, which looks intentional and cinematic.<br><br>
+          The top zone text is always fully visible on stream because it's above the preacher. This is exactly how Elevation Church does it — the slide looks designed even mid-sermon.
+          </p>
+        </div>
+        <div class="gcard">
+          <h4>🎨 Changing Series</h4>
+          <p>
+          When you move to a new series:<br><br>
+          1. Change the background style (4 options here)<br>
+          2. Change the accent colour<br>
+          3. Update the series watermark text (bottom right)<br>
+          4. Everything else stays the same<br><br>
+          <strong>New series = new vibe in literally 5 minutes.</strong> The template structure never changes, only the colours and background style.
+          </p>
+        </div>
+        <div class="gcard">
+          <h4>⚡ This Sunday Checklist</h4>
+          <p>
+          □ Download "Deep Indigo" background (most impactful)<br>
+          □ Import into ProPresenter media bin<br>
+          □ Set content text box to top 40% of slide<br>
+          □ Anton font for titles/refs, Montserrat Bold for verses<br>
+          □ Left accent bar in Yellow (#FFD400)<br>
+          □ Series watermark bottom right (small, low opacity)<br>
+          □ Run through all slides — confirm no text below 40%<br><br>
+          <strong>That's it. You're done. It will look incredible. 🙌</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+let curBG = 'aurora';
+let curAccent = '#FFD400';
+let curDark = 0.68;
+let uploadedImg = null;   // holds the loaded Image when user uploads a photo bg
+const W = 1920, H = 1200;
+
+// ── MULTI-POINT STATE ──
+let points = [
+  { label:'Point 01 —', line1:'Keep the', accent:'MAIN THING', line3:'the main thing' }
+];
+let curPointIdx = 0;
+
+const canvases = {
+  scripture: 'mainCanvas',
+  title: 'titleCanvas',
+  point: 'pointCanvas',
+  quote: 'quoteCanvas'
+};
+
+// ══════════════════════════════════
+// PHOTO BG — cover-scale helper
+// ══════════════════════════════════
+function drawImageCover(ctx, img, w, h) {
+  const iw = img.naturalWidth || img.width;
+  const ih = img.naturalHeight || img.height;
+  if (!iw || !ih) return;
+  const scale = Math.max(w / iw, h / ih);
+  const dw = iw * scale;
+  const dh = ih * scale;
+  const dx = (w - dw) / 2;
+  const dy = (h - dh) / 2;
+  ctx.drawImage(img, dx, dy, dw, dh);
+}
+
+// ══════════════════════════════════
+// BACKGROUND PAINTERS
+// ══════════════════════════════════
+
+function hexToRgb(hex) {
+  return {
+    r: parseInt(hex.slice(1,3),16),
+    g: parseInt(hex.slice(3,5),16),
+    b: parseInt(hex.slice(5,7),16)
+  };
+}
+
+// ══════════════════════════════════════════════════════════════
+// HELPER: seeded pseudo-random for reproducible textures
+// ══════════════════════════════════════════════════════════════
+function seededRand(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 4294967296;
+  };
+}
+
+// HELPER: paint many overlapping translucent brushstrokes
+function paintBrushstrokes(ctx, w, h, colFn, count, seed) {
+  const rng = seededRand(seed);
+  ctx.save();
+  for(let i = 0; i < count; i++) {
+    const x = rng() * w * 1.2 - w * .1;
+    const y = rng() * h * 1.2 - h * .1;
+    const len = w * (.15 + rng() * .55);
+    const wid = h * (.04 + rng() * .14);
+    const angle = (rng() - .5) * Math.PI * .4;
+    const op = .03 + rng() * .07;
+    const [cr, cg, cb] = colFn(rng(), i);
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+
+    const gBrush = ctx.createLinearGradient(-len*.5, 0, len*.5, 0);
+    gBrush.addColorStop(0, `rgba(${cr},${cg},${cb},0)`);
+    gBrush.addColorStop(.15, `rgba(${cr},${cg},${cb},${op})`);
+    gBrush.addColorStop(.5, `rgba(${cr},${cg},${cb},${op * 1.4})`);
+    gBrush.addColorStop(.85, `rgba(${cr},${cg},${cb},${op})`);
+    gBrush.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+
+    ctx.beginPath();
+    ctx.ellipse(0, 0, len*.5, wid*.5, 0, 0, Math.PI*2);
+    ctx.fillStyle = gBrush;
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+// HELPER: watercolour wash — overlapping soft ellipses with feathering
+function paintWatercolour(ctx, w, h, colFn, count, seed) {
+  const rng = seededRand(seed);
+  ctx.save();
+  for(let i = 0; i < count; i++) {
+    const x = rng() * w;
+    const y = rng() * h;
+    const rx = w * (.08 + rng() * .28);
+    const ry = h * (.06 + rng() * .2);
+    const op = .018 + rng() * .045;
+    const [cr, cg, cb] = colFn(rng(), i);
+
+    const gw = ctx.createRadialGradient(x, y, 0, x, y, Math.max(rx, ry));
+    gw.addColorStop(0, `rgba(${cr},${cg},${cb},${op * 2})`);
+    gw.addColorStop(.5, `rgba(${cr},${cg},${cb},${op})`);
+    gw.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+
+    ctx.save();
+    ctx.scale(rx / Math.max(rx,ry), ry / Math.max(rx,ry));
+    ctx.beginPath();
+    ctx.arc(x * Math.max(rx,ry)/rx, y * Math.max(rx,ry)/ry, Math.max(rx,ry), 0, Math.PI*2);
+    ctx.fillStyle = gw;
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+// HELPER: linen/canvas woven texture using fine crossed lines
+function paintWovenTexture(ctx, w, h, lineColor, spacing, opacity) {
+  ctx.save();
+  ctx.globalAlpha = opacity;
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = .5;
+  for(let x = 0; x < w; x += spacing) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+  }
+  for(let y = 0; y < h; y += spacing) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+// HELPER: heavyweight grain pass
+function addHeavyGrain(ctx, w, h, op, seed) {
+  const rng = seededRand(seed);
+  const tileSize = 256;
+  const offscreen = document.createElement('canvas');
+  offscreen.width = tileSize; offscreen.height = tileSize;
+  const otx = offscreen.getContext('2d');
+  const id = otx.getImageData(0,0,tileSize,tileSize);
+  for(let i=0;i<id.data.length;i+=4){
+    const n = (rng()-.5)*255*op*10;
+    id.data[i]=id.data[i+1]=id.data[i+2]=128+n;
+    id.data[i+3]=Math.abs(n)*1.8;
+  }
+  otx.putImageData(id,0,0);
+  const pat = ctx.createPattern(offscreen,'repeat');
+  ctx.fillStyle=pat;
+  ctx.globalAlpha=op*1.8;
+  ctx.fillRect(0,0,w,h);
+  ctx.globalAlpha=1;
+}
+
+// ── 1. DARK BRUSHSTROKE — like the purple Canva reference ──
+// Rich deep purple-indigo with visible diagonal painted brushstrokes
+function drawBrushstroke(ctx, w, h, accent, dark) {
+  const {r,g,b} = hexToRgb(accent);
+
+  // Deep purple-navy base coat
+  ctx.fillStyle = '#0e0818';
+  ctx.fillRect(0,0,w,h);
+
+  // Mid-tone body — richer purple pool
+  const gMid = ctx.createRadialGradient(w*.45, h*.55, 0, w*.45, h*.55, w*.85);
+  gMid.addColorStop(0, 'rgba(55,28,110,.9)');
+  gMid.addColorStop(.55, 'rgba(35,15,80,.6)');
+  gMid.addColorStop(1, 'rgba(10,4,25,0)');
+  ctx.fillStyle = gMid; ctx.fillRect(0,0,w,h);
+
+  // Upper-right — cooler blue-violet
+  const gUR = ctx.createRadialGradient(w*.9, h*.05, 0, w*.9, h*.05, w*.6);
+  gUR.addColorStop(0, 'rgba(40,20,120,.5)');
+  gUR.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gUR; ctx.fillRect(0,0,w,h);
+
+  // Dark teal shadow — lower left (like the Canva photo)
+  const gLL = ctx.createRadialGradient(0, h, 0, 0, h, w*.6);
+  gLL.addColorStop(0, 'rgba(8,35,55,.7)');
+  gLL.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gLL; ctx.fillRect(0,0,w,h);
+
+  // THE BRUSHSTROKES — diagonal sweeps like the fabric photo
+  paintBrushstrokes(ctx, w, h,
+    (t, i) => {
+      if(i % 4 === 0) return [80, 40, 180];   // purple
+      if(i % 4 === 1) return [20, 60, 110];   // navy
+      if(i % 4 === 2) return [100, 70, 200];  // violet
+      return [10, 30, 70];                     // deep teal-black
+    }, 120, 42);
+
+  // Second pass — lighter purple highlight strokes
+  paintBrushstrokes(ctx, w, h,
+    (t, i) => [130 + Math.floor(t*40), 90 + Math.floor(t*30), 220],
+    40, 99);
+
+  // Accent colour bloom — top left where text lives
+  const ga = ctx.createRadialGradient(w*.08, h*.08, 0, w*.08, h*.08, w*.3);
+  ga.addColorStop(0, `rgba(${r},${g},${b},.14)`);
+  ga.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = ga; ctx.fillRect(0,0,w,h);
+
+  // Darkness veil
+  ctx.fillStyle = `rgba(0,0,0,${dark*.55})`;
+  ctx.fillRect(0,0,w,h);
+
+  addHeavyGrain(ctx,w,h,0.045,7);
+}
+
+// ── 2. WATERCOLOUR WASH — soft blue-teal watercolour on paper ──
+function drawWatercolour(ctx, w, h, accent, dark) {
+  const {r,g,b} = hexToRgb(accent);
+
+  // Warm off-white paper base
+  ctx.fillStyle = '#e8edf0';
+  ctx.fillRect(0,0,w,h);
+
+  // Large sky-blue wash pools
+  paintWatercolour(ctx, w, h,
+    (t, i) => {
+      if(i % 5 === 0) return [100, 160, 200]; // sky blue
+      if(i % 5 === 1) return [80, 175, 185];  // teal
+      if(i % 5 === 2) return [120, 150, 195]; // periwinkle
+      if(i % 5 === 3) return [65, 140, 170];  // slate blue
+      return [90, 180, 200];
+    }, 80, 13);
+
+  // Second pass — darker veins and pooling edges
+  paintWatercolour(ctx, w, h,
+    (t, i) => {
+      if(i % 3 === 0) return [50, 80, 140];   // deep indigo vein
+      if(i % 3 === 1) return [60, 110, 160];
+      return [30, 90, 130];
+    }, 40, 77);
+
+  // Granulation — speckled texture in medium tones
+  paintWatercolour(ctx, w, h,
+    (t, i) => [140, 170, 195],
+    30, 55);
+
+  // Accent bloom — subtle tint
+  const ga = ctx.createRadialGradient(w*.15, h*.15, 0, w*.15, h*.15, w*.4);
+  ga.addColorStop(0, `rgba(${r},${g},${b},.18)`);
+  ga.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = ga; ctx.fillRect(0,0,w,h);
+
+  // Vignette — edges darker, paper feel
+  const gVig = ctx.createRadialGradient(w*.5, h*.5, h*.2, w*.5, h*.5, w*.8);
+  gVig.addColorStop(0, 'rgba(0,0,0,0)');
+  gVig.addColorStop(1, 'rgba(15,30,50,.5)');
+  ctx.fillStyle = gVig; ctx.fillRect(0,0,w,h);
+
+  // Darkness overlay for legibility
+  ctx.fillStyle = `rgba(5,15,30,${dark*.55})`;
+  ctx.fillRect(0,0,w,h);
+
+  // Paper fibre texture
+  addHeavyGrain(ctx,w,h,0.038,21);
+}
+
+// ── 3. WOVEN LINEN — warm cream/sand with tight woven fibre ──
+function drawLinen(ctx, w, h, accent, dark) {
+  const {r,g,b} = hexToRgb(accent);
+
+  // Warm cream-sand base
+  ctx.fillStyle = '#c8b89a';
+  ctx.fillRect(0,0,w,h);
+
+  // Warm tan mid-wash
+  const gBase = ctx.createRadialGradient(w*.4, h*.4, 0, w*.4, h*.4, w*.9);
+  gBase.addColorStop(0, 'rgba(200,180,145,.7)');
+  gBase.addColorStop(.6, 'rgba(165,140,105,.5)');
+  gBase.addColorStop(1, 'rgba(120,95,65,0)');
+  ctx.fillStyle = gBase; ctx.fillRect(0,0,w,h);
+
+  // Shadow pool — lower right, darker
+  const gSh = ctx.createRadialGradient(w, h, 0, w, h, w*.8);
+  gSh.addColorStop(0, 'rgba(60,40,20,.5)');
+  gSh.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gSh; ctx.fillRect(0,0,w,h);
+
+  // Highlight — upper left
+  const gHL = ctx.createRadialGradient(0, 0, 0, 0, 0, w*.5);
+  gHL.addColorStop(0, 'rgba(240,225,200,.4)');
+  gHL.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gHL; ctx.fillRect(0,0,w,h);
+
+  // WOVEN texture — tight grid of linen threads
+  paintWovenTexture(ctx, w, h, 'rgba(100,75,45,.09)', 3, 1);
+  paintWovenTexture(ctx, w, h, 'rgba(240,220,185,.07)', 6, 1);
+
+  // Loose brushstroke organic variation — warm ochre
+  paintBrushstrokes(ctx, w, h,
+    (t, i) => {
+      if(i%3===0) return [180,150,100];
+      if(i%3===1) return [140,110,75];
+      return [200,170,125];
+    }, 60, 31);
+
+  // Accent colour — warm tint
+  const ga = ctx.createRadialGradient(w*.1, h*.1, 0, w*.1, h*.1, w*.35);
+  ga.addColorStop(0, `rgba(${r},${g},${b},.2)`);
+  ga.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = ga; ctx.fillRect(0,0,w,h);
+
+  // Dark veil
+  ctx.fillStyle = `rgba(20,12,4,${dark*.65})`;
+  ctx.fillRect(0,0,w,h);
+
+  addHeavyGrain(ctx,w,h,0.055,18);
+}
+
+// ── 4. PAINTED CANVAS — thick impasto oil paint, dark rich tones ──
+function drawCanvas(ctx, w, h, accent, dark) {
+  const {r,g,b} = hexToRgb(accent);
+
+  // Near-black base coat — primed canvas
+  ctx.fillStyle = '#0a0905';
+  ctx.fillRect(0,0,w,h);
+
+  // Rich earth undertone — raw sienna/burnt umber
+  const gEarth = ctx.createRadialGradient(w*.3, h*.7, 0, w*.3, h*.7, w*.9);
+  gEarth.addColorStop(0, 'rgba(90,45,12,.7)');
+  gEarth.addColorStop(.5, 'rgba(60,28,8,.4)');
+  gEarth.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gEarth; ctx.fillRect(0,0,w,h);
+
+  // Cool light — upper area, like window light hitting canvas
+  const gLight = ctx.createRadialGradient(w*.7, h*.1, 0, w*.7, h*.1, w*.55);
+  gLight.addColorStop(0, 'rgba(80,75,65,.5)');
+  gLight.addColorStop(.4, 'rgba(50,45,38,.2)');
+  gLight.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gLight; ctx.fillRect(0,0,w,h);
+
+  // Heavy impasto brushstrokes — palette knife marks
+  paintBrushstrokes(ctx, w, h,
+    (t, i) => {
+      if(i%5===0) return [110, 70, 30];   // burnt sienna
+      if(i%5===1) return [75, 55, 20];    // raw umber
+      if(i%5===2) return [140, 100, 45];  // yellow ochre
+      if(i%5===3) return [50, 40, 30];    // dark brown
+      return [90, 60, 25];
+    }, 100, 63);
+
+  // Second layer — lighter impasto highlights
+  paintBrushstrokes(ctx, w, h,
+    (t, i) => {
+      if(i%3===0) return [160, 130, 80];
+      if(i%3===1) return [120, 95, 55];
+      return [80, 65, 35];
+    }, 45, 88);
+
+  // Canvas weave — coarser than linen
+  paintWovenTexture(ctx, w, h, 'rgba(150,110,60,.06)', 5, 1);
+  paintWovenTexture(ctx, w, h, 'rgba(30,20,8,.08)', 10, 1);
+
+  // Accent bloom
+  const ga = ctx.createRadialGradient(w*.1, h*.15, 0, w*.1, h*.15, w*.32);
+  ga.addColorStop(0, `rgba(${r},${g},${b},.18)`);
+  ga.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = ga; ctx.fillRect(0,0,w,h);
+
+  // Darkness — strong here for drama
+  ctx.fillStyle = `rgba(0,0,0,${dark*.7})`;
+  ctx.fillRect(0,0,w,h);
+
+  addHeavyGrain(ctx,w,h,0.065,44);
+}
+
+function addGrain(ctx,w,h,op) {
+  // Lightweight grain using small tiles
+  const tileSize = 128;
+  const offscreen = document.createElement('canvas');
+  offscreen.width = tileSize; offscreen.height = tileSize;
+  const otx = offscreen.getContext('2d');
+  const id = otx.getImageData(0,0,tileSize,tileSize);
+  for(let i=0;i<id.data.length;i+=4){
+    const n = (Math.random()-.5)*255*op*8;
+    id.data[i]=id.data[i+1]=id.data[i+2]=128+n;
+    id.data[i+3]=Math.abs(n)*1.5;
+  }
+  otx.putImageData(id,0,0);
+  const pat = ctx.createPattern(offscreen,'repeat');
+  ctx.fillStyle=pat;
+  ctx.globalAlpha=op*2;
+  ctx.fillRect(0,0,w,h);
+  ctx.globalAlpha=1;
+}
+
+// ══════════════════════════════════
+// RENDER
+// ══════════════════════════════════
+
+// ── 5. SOFT PARCHMENT — warm cream aged paper, very light ──
+function drawParchment(ctx, w, h, accent, dark) {
+  const {r,g,b} = hexToRgb(accent);
+
+  // Aged cream base
+  ctx.fillStyle = '#f0e8d5';
+  ctx.fillRect(0,0,w,h);
+
+  // Warm honey pool — centre-left
+  const gHoney = ctx.createRadialGradient(w*.35, h*.5, 0, w*.35, h*.5, w*.7);
+  gHoney.addColorStop(0, 'rgba(220,190,130,.55)');
+  gHoney.addColorStop(.6, 'rgba(200,165,100,.25)');
+  gHoney.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gHoney; ctx.fillRect(0,0,w,h);
+
+  // Tea-stain darker edges
+  const gEdge = ctx.createRadialGradient(w*.5, h*.5, h*.2, w*.5, h*.5, w*.85);
+  gEdge.addColorStop(0, 'rgba(0,0,0,0)');
+  gEdge.addColorStop(.7, 'rgba(120,85,40,.12)');
+  gEdge.addColorStop(1, 'rgba(90,55,20,.35)');
+  ctx.fillStyle = gEdge; ctx.fillRect(0,0,w,h);
+
+  // Soft watercolour bleed — warm ochre washes
+  paintWatercolour(ctx, w, h,
+    (t, i) => {
+      if(i%4===0) return [200,170,110];
+      if(i%4===1) return [180,145,90];
+      if(i%4===2) return [215,185,130];
+      return [165,130,80];
+    }, 50, 91);
+
+  // Fine fibre lines — horizontal paper grain
+  paintWovenTexture(ctx, w, h, 'rgba(160,120,70,.04)', 4, 1);
+  paintWovenTexture(ctx, w, h, 'rgba(255,240,200,.06)', 8, 1);
+
+  // Accent tint — very subtle
+  const ga = ctx.createRadialGradient(w*.08, h*.08, 0, w*.08, h*.08, w*.4);
+  ga.addColorStop(0, `rgba(${r},${g},${b},.15)`);
+  ga.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = ga; ctx.fillRect(0,0,w,h);
+
+  // Darkness veil — light at minimum, deeper when slider up
+  ctx.fillStyle = `rgba(15,8,0,${dark*.5})`;
+  ctx.fillRect(0,0,w,h);
+
+  addHeavyGrain(ctx,w,h,0.04,29);
+}
+
+// ── 6. MORNING SKY — pale blue-grey, misty, painterly ──
+function drawMorningSky(ctx, w, h, accent, dark) {
+  const {r,g,b} = hexToRgb(accent);
+
+  // Pale sky base
+  ctx.fillStyle = '#dde8ee';
+  ctx.fillRect(0,0,w,h);
+
+  // Soft blue wash — upper
+  const gSky = ctx.createRadialGradient(w*.5, 0, 0, w*.5, 0, h*1.1);
+  gSky.addColorStop(0, 'rgba(180,210,230,.7)');
+  gSky.addColorStop(.5, 'rgba(200,220,235,.4)');
+  gSky.addColorStop(1, 'rgba(220,230,235,0)');
+  ctx.fillStyle = gSky; ctx.fillRect(0,0,w,h);
+
+  // Misty cloud pools
+  paintWatercolour(ctx, w, h,
+    (t, i) => {
+      if(i%5===0) return [160,190,215]; // soft blue
+      if(i%5===1) return [200,215,225]; // pale silver
+      if(i%5===2) return [140,175,205]; // slate blue
+      if(i%5===3) return [185,205,220]; // powder blue
+      return [170,195,218];
+    }, 70, 37);
+
+  // Warm horizon glow — lower band, peachy
+  const gHorizon = ctx.createRadialGradient(w*.5, h, 0, w*.5, h, w*.8);
+  gHorizon.addColorStop(0, 'rgba(235,210,185,.5)');
+  gHorizon.addColorStop(.4, 'rgba(220,195,165,.2)');
+  gHorizon.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gHorizon; ctx.fillRect(0,0,w,h);
+
+  // Subtle cloud streaks — slightly darker
+  paintBrushstrokes(ctx, w, h,
+    (t, i) => {
+      if(i%3===0) return [140,170,200];
+      if(i%3===1) return [160,185,210];
+      return [120,155,190];
+    }, 50, 53);
+
+  // Accent bloom
+  const ga = ctx.createRadialGradient(w*.1, h*.12, 0, w*.1, h*.12, w*.35);
+  ga.addColorStop(0, `rgba(${r},${g},${b},.2)`);
+  ga.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = ga; ctx.fillRect(0,0,w,h);
+
+  // Vignette
+  const gVig = ctx.createRadialGradient(w*.5, h*.5, h*.15, w*.5, h*.5, w*.75);
+  gVig.addColorStop(0, 'rgba(0,0,0,0)');
+  gVig.addColorStop(1, 'rgba(20,35,55,.3)');
+  ctx.fillStyle = gVig; ctx.fillRect(0,0,w,h);
+
+  // Darkness veil
+  ctx.fillStyle = `rgba(10,20,35,${dark*.5})`;
+  ctx.fillRect(0,0,w,h);
+
+  addHeavyGrain(ctx,w,h,0.032,67);
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// ── 7. AURORA GRADIENT MESH ──
+// Smooth multi-point colour mesh in jewel tones. NO texture —
+// just slow colour transitions. Apple/Stripe feel. Reads perfectly
+// on any projector, never muddy, never busy.
+// ══════════════════════════════════════════════════════════════
+function drawAurora(ctx, w, h, accent, dark) {
+  const {r,g,b} = hexToRgb(accent);
+
+  // Deep midnight indigo base
+  ctx.fillStyle = '#0a0518';
+  ctx.fillRect(0,0,w,h);
+
+  // Pool 1 — deep violet, top-left (text zone)
+  const p1 = ctx.createRadialGradient(w*.18, h*.2, 0, w*.18, h*.2, w*.6);
+  p1.addColorStop(0, 'rgba(94, 46, 165, 0.95)');
+  p1.addColorStop(.55, 'rgba(60, 30, 120, 0.5)');
+  p1.addColorStop(1, 'rgba(94, 46, 165, 0)');
+  ctx.fillStyle = p1; ctx.fillRect(0,0,w,h);
+
+  // Pool 2 — magenta, top-right
+  const p2 = ctx.createRadialGradient(w*.82, h*.15, 0, w*.82, h*.15, w*.55);
+  p2.addColorStop(0, 'rgba(201, 61, 122, 0.85)');
+  p2.addColorStop(.55, 'rgba(140, 40, 90, 0.4)');
+  p2.addColorStop(1, 'rgba(201, 61, 122, 0)');
+  ctx.fillStyle = p2; ctx.fillRect(0,0,w,h);
+
+  // Pool 3 — teal/cyan, bottom-right
+  const p3 = ctx.createRadialGradient(w*.85, h*.85, 0, w*.85, h*.85, w*.7);
+  p3.addColorStop(0, 'rgba(42, 143, 168, 0.8)');
+  p3.addColorStop(.5, 'rgba(25, 90, 115, 0.4)');
+  p3.addColorStop(1, 'rgba(42, 143, 168, 0)');
+  ctx.fillStyle = p3; ctx.fillRect(0,0,w,h);
+
+  // Pool 4 — deep cobalt, bottom-left
+  const p4 = ctx.createRadialGradient(w*.12, h*.88, 0, w*.12, h*.88, w*.55);
+  p4.addColorStop(0, 'rgba(30, 58, 126, 0.92)');
+  p4.addColorStop(.5, 'rgba(15, 30, 80, 0.5)');
+  p4.addColorStop(1, 'rgba(30, 58, 126, 0)');
+  ctx.fillStyle = p4; ctx.fillRect(0,0,w,h);
+
+  // Pool 5 — centre rose bloom (keeps middle warm, not dead)
+  const p5 = ctx.createRadialGradient(w*.5, h*.5, 0, w*.5, h*.5, w*.45);
+  p5.addColorStop(0, 'rgba(168, 74, 110, 0.35)');
+  p5.addColorStop(.7, 'rgba(100, 40, 70, 0.15)');
+  p5.addColorStop(1, 'rgba(168, 74, 110, 0)');
+  ctx.fillStyle = p5; ctx.fillRect(0,0,w,h);
+
+  // Accent colour kiss in top-left where text lives
+  const ga = ctx.createRadialGradient(w*.08, h*.08, 0, w*.08, h*.08, w*.32);
+  ga.addColorStop(0, `rgba(${r},${g},${b},.18)`);
+  ga.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = ga; ctx.fillRect(0,0,w,h);
+
+  // Darkness veil — lighter than painted BGs because this is smooth
+  ctx.fillStyle = `rgba(5,2,15,${dark*.45})`;
+  ctx.fillRect(0,0,w,h);
+
+  // Ultra-fine grain to stop banding on projectors (essential)
+  addHeavyGrain(ctx,w,h,0.015,17);
+}
+
+// ══════════════════════════════════════════════════════════════
+// ── 8. SCRIPTURE TOPOGRAPHY ──
+// Faint topographic contour lines under a warm radial wash.
+// Feels meaningful, deep, and bible-adjacent without any busy texture.
+// ══════════════════════════════════════════════════════════════
+function drawTopography(ctx, w, h, accent, dark) {
+  const {r,g,b} = hexToRgb(accent);
+
+  // Deep ocean-navy base
+  ctx.fillStyle = '#081018';
+  ctx.fillRect(0,0,w,h);
+
+  // Slate-blue wash — upper-left body
+  const gw = ctx.createRadialGradient(w*.3, h*.3, 0, w*.3, h*.3, w*.95);
+  gw.addColorStop(0, 'rgba(26, 56, 88, 0.9)');
+  gw.addColorStop(.55, 'rgba(12, 30, 50, 0.6)');
+  gw.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
+  ctx.fillStyle = gw; ctx.fillRect(0,0,w,h);
+
+  // Contour lines — draw 20+ wavy horizontals with varied curvature
+  ctx.save();
+  ctx.strokeStyle = 'rgba(212, 160, 96, 0.22)'; // warm gold lines
+  ctx.lineWidth = 1.2;
+  const rng = seededRand(314);
+  const lineCount = 26;
+  for(let i = 0; i < lineCount; i++) {
+    const baseY = (i / lineCount) * h * 1.15 - h*.05;
+    const amp = 18 + rng() * 36;
+    const freq = 2 + rng() * 3;
+    const phase = rng() * Math.PI * 2;
+    ctx.beginPath();
+    // Smooth wavy path across the width
+    for(let x = -20; x <= w + 20; x += 12) {
+      const y = baseY + Math.sin((x / w) * Math.PI * freq + phase) * amp
+                      + Math.sin((x / w) * Math.PI * freq * 2.3 + phase * .7) * (amp * .3);
+      if(x === -20) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Second, denser contour pass — even fainter, tighter
+  ctx.save();
+  ctx.strokeStyle = 'rgba(212, 160, 96, 0.1)';
+  ctx.lineWidth = 0.8;
+  const rng2 = seededRand(2718);
+  for(let i = 0; i < 40; i++) {
+    const baseY = (i / 40) * h * 1.15 - h*.05 + 8;
+    const amp = 10 + rng2() * 20;
+    const freq = 3 + rng2() * 4;
+    const phase = rng2() * Math.PI * 2;
+    ctx.beginPath();
+    for(let x = -20; x <= w + 20; x += 14) {
+      const y = baseY + Math.sin((x / w) * Math.PI * freq + phase) * amp;
+      if(x === -20) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Warm gold radial bloom — top-left where content lives
+  const ga = ctx.createRadialGradient(w*.22, h*.22, 0, w*.22, h*.22, w*.45);
+  ga.addColorStop(0, `rgba(${r},${g},${b},.22)`);
+  ga.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = ga; ctx.fillRect(0,0,w,h);
+
+  // Cool vignette — corners darker
+  const vig = ctx.createRadialGradient(w*.5, h*.5, h*.3, w*.5, h*.5, w*.75);
+  vig.addColorStop(0, 'rgba(0,0,0,0)');
+  vig.addColorStop(1, 'rgba(0,5,15,.55)');
+  ctx.fillStyle = vig; ctx.fillRect(0,0,w,h);
+
+  // Darkness veil
+  ctx.fillStyle = `rgba(2,8,16,${dark*.5})`;
+  ctx.fillRect(0,0,w,h);
+
+  addHeavyGrain(ctx,w,h,0.028,91);
+}
+
+// ══════════════════════════════════════════════════════════════
+// ── 9. MOLTEN / LIQUID METAL ──
+// Slow organic blob gradients in bronze, deep gold, and gunmetal.
+// Warm, premium, no detail to compete with anything. Looks expensive.
+// ══════════════════════════════════════════════════════════════
+function drawMolten(ctx, w, h, accent, dark) {
+  const {r,g,b} = hexToRgb(accent);
+
+  // Rich dark bronze base
+  ctx.fillStyle = '#1a0f05';
+  ctx.fillRect(0,0,w,h);
+
+  // Primary pool — molten gold-bronze, upper-left body
+  const p1 = ctx.createRadialGradient(w*.32, h*.4, 0, w*.32, h*.4, w*.7);
+  p1.addColorStop(0, 'rgba(216, 152, 80, 0.9)');
+  p1.addColorStop(.35, 'rgba(142, 90, 32, 0.65)');
+  p1.addColorStop(.75, 'rgba(70, 38, 10, 0.35)');
+  p1.addColorStop(1, 'rgba(42, 24, 8, 0)');
+  ctx.fillStyle = p1; ctx.fillRect(0,0,w,h);
+
+  // Secondary pool — deeper copper, bottom-right
+  const p2 = ctx.createRadialGradient(w*.78, h*.7, 0, w*.78, h*.7, w*.6);
+  p2.addColorStop(0, 'rgba(184, 112, 56, 0.75)');
+  p2.addColorStop(.5, 'rgba(106, 56, 21, 0.4)');
+  p2.addColorStop(1, 'rgba(26, 10, 4, 0)');
+  ctx.fillStyle = p2; ctx.fillRect(0,0,w,h);
+
+  // Hot highlight — pale gold kiss, top-right
+  const p3 = ctx.createRadialGradient(w*.88, h*.12, 0, w*.88, h*.12, w*.4);
+  p3.addColorStop(0, 'rgba(255, 192, 128, 0.5)');
+  p3.addColorStop(.5, 'rgba(220, 150, 80, 0.2)');
+  p3.addColorStop(1, 'rgba(255, 192, 128, 0)');
+  ctx.fillStyle = p3; ctx.fillRect(0,0,w,h);
+
+  // Deep shadow pool — bottom-left (gunmetal-ish)
+  const p4 = ctx.createRadialGradient(w*.15, h*.88, 0, w*.15, h*.88, w*.55);
+  p4.addColorStop(0, 'rgba(10, 4, 2, 0.85)');
+  p4.addColorStop(.5, 'rgba(20, 10, 4, 0.45)');
+  p4.addColorStop(1, 'rgba(10, 4, 2, 0)');
+  ctx.fillStyle = p4; ctx.fillRect(0,0,w,h);
+
+  // Subtle "heat shimmer" — very gentle hot spot bloom near top-centre
+  const p5 = ctx.createRadialGradient(w*.55, h*.28, 0, w*.55, h*.28, w*.35);
+  p5.addColorStop(0, 'rgba(255, 170, 100, 0.25)');
+  p5.addColorStop(1, 'rgba(255, 170, 100, 0)');
+  ctx.fillStyle = p5; ctx.fillRect(0,0,w,h);
+
+  // Accent colour — injected subtly, top-left
+  const ga = ctx.createRadialGradient(w*.08, h*.1, 0, w*.08, h*.1, w*.3);
+  ga.addColorStop(0, `rgba(${r},${g},${b},.15)`);
+  ga.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = ga; ctx.fillRect(0,0,w,h);
+
+  // Darkness veil
+  ctx.fillStyle = `rgba(8,4,0,${dark*.55})`;
+  ctx.fillRect(0,0,w,h);
+
+  // Fine grain — adds just enough material feel to avoid plasticky
+  addHeavyGrain(ctx,w,h,0.02,53);
+}
+
+
+function getBGFn() {
+  return {
+    aurora:drawAurora,
+    topography:drawTopography,
+    molten:drawMolten,
+    brushstroke:drawBrushstroke,
+    watercolour:drawWatercolour,
+    linen:drawLinen,
+    canvas:drawCanvas,
+    parchment:drawParchment,
+    morningsky:drawMorningSky
+  }[curBG];
+}
+
+function renderCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  drawBGOrPhoto(ctx, W, H);
+}
+
+// Unified BG render — photo with darkness overlay, or painted background
+function drawBGOrPhoto(ctx, w, h) {
+  if(uploadedImg) {
+    drawImageCover(ctx, uploadedImg, w, h);
+    // Apply darkness overlay so text stays readable
+    ctx.fillStyle = `rgba(0,0,0,${curDark * 0.85})`;
+    ctx.fillRect(0,0,w,h);
+    // Accent bloom in top-left for consistency
+    const {r,g,b} = hexToRgb(curAccent);
+    const ga = ctx.createRadialGradient(w*.08, h*.08, 0, w*.08, h*.08, w*.35);
+    ga.addColorStop(0, `rgba(${r},${g},${b},.18)`);
+    ga.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = ga; ctx.fillRect(0,0,w,h);
+    addHeavyGrain(ctx,w,h,0.03,11);
+  } else {
+    getBGFn()(ctx, w, h, curAccent, curDark);
+  }
+}
+
+function renderAll() {
+  Object.values(canvases).forEach(id => renderCanvas(id));
+  updateAccentColors();
+}
+
+function updateAccentColors() {
+  // Update all accent colour references in DOM
+  document.querySelectorAll('.tc-eyebrow,.tc-ref').forEach(el=>el.style.color=curAccent);
+  document.querySelectorAll('.tc-inner').forEach(el=>el.style.borderLeftColor=curAccent);
+  document.getElementById('titleAccent').style.color = curAccent;
+  document.querySelectorAll('.pt-label,.qm').forEach(el=>el.style.color=curAccent);
+  document.getElementById('ptAccent').style.color = curAccent;
+  document.getElementById('qMark').style.color = curAccent;
+}
+
+// ══════════════════════════════════
+// UI HANDLERS
+// ══════════════════════════════════
+
+// ── PHOTO UPLOAD HANDLERS ──
+function loadPhoto(file) {
+  if(!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      uploadedImg = img;
+      // Show thumbnail
+      const thumb = document.getElementById('pdThumb');
+      thumb.src = e.target.result;
+      thumb.style.display = 'block';
+      document.getElementById('pdLabel').textContent = '📷 ' + file.name;
+      document.getElementById('photoDrop').classList.add('on');
+      document.getElementById('photoClear').style.display = 'block';
+      // Deselect painted BG buttons
+      document.querySelectorAll('#sbStyle .vbtn').forEach(b => {
+        if(['aurora','topography','molten','brushstroke','watercolour','linen','canvas','parchment','morningsky'].some(n => b.onclick?.toString().includes(n)))
+          b.classList.remove('on');
+      });
+      renderAll();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function handlePhotoSelect(input) { if(input.files[0]) loadPhoto(input.files[0]); }
+function handlePhotoDrop(e) { if(e.dataTransfer.files[0]) loadPhoto(e.dataTransfer.files[0]); }
+function clearPhoto() {
+  uploadedImg = null;
+  document.getElementById('pdThumb').style.display = 'none';
+  document.getElementById('pdLabel').textContent = '📷 DROP IMAGE OR CLICK';
+  document.getElementById('photoDrop').classList.remove('on');
+  document.getElementById('photoClear').style.display = 'none';
+  document.getElementById('photoInput').value = '';
+  // Re-select the current painted BG
+  document.querySelectorAll('#sbStyle .vbtn').forEach(b => {
+    if(b.onclick?.toString().includes(curBG)) b.classList.add('on');
+  });
+  renderAll();
+}
+
+// ── MULTI-POINT MANAGEMENT ──
+function renderPointFields() {
+  const container = document.getElementById('pointFieldsContainer');
+  if(!container) return;
+  // Save current field values back to array before re-render
+  savePointFields();
+  let html = '';
+  points.forEach((pt, i) => {
+    const active = i === curPointIdx;
+    html += `<div class="pt-group" style="${active?'border-color:#FFD400;':''}">
+      <div class="pt-group-hdr">
+        <span style="cursor:pointer" onclick="goToPoint(${i})">POINT ${(i+1).toString().padStart(2,'0')}</span>
+        ${points.length > 1 ? `<button class="pt-rm-btn" onclick="removePoint(${i})">✕</button>` : ''}
+      </div>
+      <div class="egroup"><label class="elabel">Label</label>
+        <input class="einput" id="e_pt_${i}_label" value="${escH(pt.label)}" oninput="onPointInput(${i})"></div>
+      <div class="egroup"><label class="elabel">Line 1</label>
+        <input class="einput" id="e_pt_${i}_line1" value="${escH(pt.line1)}" oninput="onPointInput(${i})"></div>
+      <div class="egroup"><label class="elabel">Accent word</label>
+        <input class="einput" id="e_pt_${i}_accent" value="${escH(pt.accent)}" oninput="onPointInput(${i})"></div>
+      <div class="egroup"><label class="elabel">Line 3</label>
+        <input class="einput" id="e_pt_${i}_line3" value="${escH(pt.line3)}" oninput="onPointInput(${i})"></div>
+    </div>`;
+  });
+  container.innerHTML = html;
+  document.getElementById('ptCountLabel').textContent = points.length;
+  updatePointNav();
+}
+
+function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function savePointFields() {
+  points.forEach((pt, i) => {
+    const lbl = document.getElementById(`e_pt_${i}_label`);
+    if(lbl) {
+      pt.label  = lbl.value;
+      pt.line1  = document.getElementById(`e_pt_${i}_line1`).value;
+      pt.accent = document.getElementById(`e_pt_${i}_accent`).value;
+      pt.line3  = document.getElementById(`e_pt_${i}_line3`).value;
+    }
+  });
+}
+
+function onPointInput(idx) {
+  // Save this point's fields live
+  const pt = points[idx];
+  pt.label  = document.getElementById(`e_pt_${idx}_label`).value;
+  pt.line1  = document.getElementById(`e_pt_${idx}_line1`).value;
+  pt.accent = document.getElementById(`e_pt_${idx}_accent`).value;
+  pt.line3  = document.getElementById(`e_pt_${idx}_line3`).value;
+  // If this is the currently previewed point, update preview
+  if(idx === curPointIdx) updatePointPreview();
+}
+
+function addPoint() {
+  if(points.length >= 10) return;
+  savePointFields();
+  const n = points.length + 1;
+  points.push({ label:`Point ${n.toString().padStart(2,'0')} —`, line1:'', accent:'', line3:'' });
+  curPointIdx = points.length - 1;
+  renderPointFields();
+  updatePointPreview();
+}
+
+function removePoint(idx) {
+  if(points.length <= 1) return;
+  savePointFields();
+  points.splice(idx, 1);
+  // Re-label remaining points
+  points.forEach((pt, i) => {
+    pt.label = `Point ${(i+1).toString().padStart(2,'0')} —`;
+  });
+  if(curPointIdx >= points.length) curPointIdx = points.length - 1;
+  renderPointFields();
+  updatePointPreview();
+}
+
+function goToPoint(idx) {
+  savePointFields();
+  curPointIdx = idx;
+  renderPointFields();
+  updatePointPreview();
+}
+
+function navPoint(dir) {
+  savePointFields();
+  curPointIdx = Math.max(0, Math.min(points.length-1, curPointIdx + dir));
+  renderPointFields();
+  updatePointPreview();
+}
+
+function updatePointNav() {
+  const label = document.getElementById('ptNavLabel');
+  const prev = document.getElementById('ptPrev');
+  const next = document.getElementById('ptNext');
+  if(label) label.textContent = `POINT ${curPointIdx+1} / ${points.length}`;
+  if(prev) prev.disabled = curPointIdx === 0;
+  if(next) next.disabled = curPointIdx >= points.length - 1;
+}
+
+function updatePointPreview() {
+  const pt = points[curPointIdx];
+  if(!pt) return;
+  document.getElementById('ptLabel').textContent = pt.label;
+  const ptText = document.querySelector('.pt-text');
+  if(ptText) ptText.innerHTML =
+    escH(pt.line1) + '<br>' +
+    '<span id="ptAccent" style="color:'+curAccent+'">' + escH(pt.accent) + '</span><br>' +
+    escH(pt.line3);
+  updatePointNav();
+  updateAccentColors();
+}
+
+function setBG(name, btn) {
+  curBG = name;
+  // Clear any uploaded photo when a painted bg is chosen
+  if(uploadedImg) clearPhoto();
+  const bgNames = ['aurora','topography','molten','brushstroke','watercolour','linen','canvas','parchment','morningsky'];
+  document.querySelectorAll('.vbtn').forEach(b=>{
+    if(bgNames.some(n=>b.onclick?.toString().includes(n))) {
+      b.classList.remove('on');
+    }
+  });
+  btn.classList.add('on');
+  renderAll();
+}
+
+function setAccent(color, el) {
+  curAccent = color;
+  document.querySelectorAll('.asw').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+  renderAll();
+}
+
+function setDark(val, btn) {
+  curDark = val;
+  btn.parentElement.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderAll();
+}
+
+function showSbTab(tab) {
+  document.getElementById('sbStyle').style.display = tab==='style' ? 'block' : 'none';
+  document.getElementById('sbEdit').style.display  = tab==='edit'  ? 'block' : 'none';
+  document.getElementById('sbTabStyle').classList.toggle('on', tab==='style');
+  document.getElementById('sbTabEdit').classList.toggle('on', tab==='edit');
+}
+
+function updateText() {
+  // Scripture slide
+  const eyebrow = document.getElementById('e_eyebrow').value;
+  const verse    = document.getElementById('e_verse').value;
+  const ref      = document.getElementById('e_ref').value;
+  document.getElementById('tcEyebrow').textContent = eyebrow;
+  document.getElementById('tcVerse').textContent   = verse;
+  document.getElementById('tcRef').textContent     = ref;
+
+  // Series title slide
+  const titleLines = document.querySelectorAll('.title-big');
+  titleLines.forEach(el => {
+    el.innerHTML =
+      document.getElementById('e_seriesName').value + '<br>' +
+      '<span id="titleAccent" style="color:'+curAccent+'">'+document.getElementById('e_seriesAccent').value+'</span><br>' +
+      document.getElementById('e_seriesLine3').value;
+  });
+  document.querySelectorAll('.title-sub').forEach(el => {
+    el.textContent = document.getElementById('e_speaker').value;
+  });
+
+  // Point slide — driven by points array now
+  savePointFields();
+  updatePointPreview();
+
+  // Quote slide
+  document.querySelector('.qt').textContent  = document.getElementById('e_quote').value;
+  document.querySelector('.qa').textContent  = document.getElementById('e_quoteAuthor').value;
+
+  // All watermarks
+  document.querySelectorAll('.sw-text').forEach(el => {
+    el.textContent = document.getElementById('e_watermark').value;
+  });
+
+  // Re-apply accent to rebuilt spans
+  updateAccentColors();
+}
+
+function showTab(name, tabEl) {
+  document.querySelectorAll('.spanel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.stab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+name).classList.add('on');
+  tabEl.classList.add('on');
+  if(canvases[name]) renderCanvas(canvases[name]);
+}
+
+// Zone toggles
+function toggleZone() {
+  const ov = document.getElementById('zoneOverlay');
+  const btn = document.getElementById('zoneToggle');
+  const show = !ov.classList.contains('show');
+  ov.classList.toggle('show', show);
+  btn.classList.toggle('on', show);
+  btn.textContent = show ? '◉ SHOW SAFE ZONES' : '○ SHOW SAFE ZONES';
+}
+function toggleZoneTitle() {
+  const ov = document.getElementById('zoneTitleOverlay');
+  const btn = document.getElementById('zoneTitleToggle');
+  const show = !ov.classList.contains('show');
+  ov.classList.toggle('show', show);
+  btn.classList.toggle('on', show);
+  btn.textContent = show ? '◉ SHOW SAFE ZONES' : '○ SHOW SAFE ZONES';
+}
+function toggleZonePoint() {
+  const ov = document.getElementById('zonePointOverlay');
+  const btn = document.getElementById('zonePointToggle');
+  const show = !ov.classList.contains('show');
+  ov.classList.toggle('show', show);
+  btn.classList.toggle('on', show);
+  btn.textContent = show ? '◉ SHOW SAFE ZONES' : '○ SHOW SAFE ZONES';
+}
+function toggleZoneQuote() {
+  const ov = document.getElementById('zoneQuoteOverlay');
+  const btn = document.getElementById('zoneQuoteToggle');
+  const show = !ov.classList.contains('show');
+  ov.classList.toggle('show', show);
+  btn.classList.toggle('on', show);
+  btn.textContent = show ? '◉ SHOW SAFE ZONES' : '○ SHOW SAFE ZONES';
+}
+
+// ══════════════════════════════════
+// DOWNLOAD
+// ══════════════════════════════════
+
+// Read helpers — live values from the sidebar inputs
+function _v(id, fallback) {
+  const el = document.getElementById(id);
+  return (el && el.value != null && el.value !== '') ? el.value : (fallback||'');
+}
+
+function _setLS(ctx, px) { try { ctx.letterSpacing = px + 'px'; } catch(e){} }
+
+function downloadSlide() {
+  const activePanel = document.querySelector('.spanel.on');
+  if(!activePanel) return;
+  const id = activePanel.id.replace('tab-','');
+  if(!canvases[id]) return;
+  if(id === 'point') {
+    // Download current point only
+    savePointFields();
+    renderSlideToPNG('point', `junction_point_${(curPointIdx+1).toString().padStart(2,'0')}_${curBG}.png`, curPointIdx);
+  } else {
+    renderSlideToPNG(id, `junction_${id}_${curBG}.png`);
+  }
+}
+
+function downloadAll() {
+  savePointFields();
+  // Build full list: scripture, title, all points, quote
+  const jobs = [];
+  jobs.push({ type:'scripture', file:`junction_01_scripture_${curBG}.png` });
+  jobs.push({ type:'title',     file:`junction_02_title_${curBG}.png` });
+  points.forEach((pt, i) => {
+    jobs.push({ type:'point', ptIdx:i, file:`junction_${(3+i).toString().padStart(2,'0')}_point_${(i+1).toString().padStart(2,'0')}_${curBG}.png` });
+  });
+  jobs.push({ type:'quote', file:`junction_${(3+points.length).toString().padStart(2,'0')}_quote_${curBG}.png` });
+
+  jobs.forEach((job, i) => {
+    setTimeout(()=>{
+      renderSlideToPNG(job.type, job.file, job.ptIdx);
+    }, i*700);
+  });
+}
+
+function renderSlideToPNG(slideType, filename, ptIdx) {
+  const off = document.createElement('canvas');
+  off.width = W; off.height = H;
+  const ctx = off.getContext('2d');
+  // 1. Background (photo or painted)
+  drawBGOrPhoto(ctx, W, H);
+  // 2. Text layer
+  const accent = curAccent;
+  ctx.save();
+  ctx.textBaseline = 'top';
+  if(slideType === 'scripture') drawScripture(ctx, accent);
+  else if(slideType === 'title') drawTitle(ctx, accent);
+  else if(slideType === 'point') drawPoint(ctx, accent, ptIdx != null ? ptIdx : curPointIdx);
+  else if(slideType === 'quote') drawQuote(ctx, accent);
+  drawWatermark(ctx);
+  ctx.restore();
+
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = off.toDataURL('image/png');
+  link.click();
+}
+
+// ── SCRIPTURE ─────────────────────────────
+function drawScripture(ctx, accent) {
+  const eyebrow = _v('e_eyebrow', 'Scripture');
+  const verse   = _v('e_verse', '');
+  const ref     = _v('e_ref', '');
+
+  const xText = W*.085;
+  const xBar  = W*.07;
+
+  // Subtle dark gradient behind content area for legibility
+  const gbg = ctx.createLinearGradient(0, 0, W*.6, 0);
+  gbg.addColorStop(0, 'rgba(0,0,0,.55)');
+  gbg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gbg;
+  ctx.fillRect(0, H*.045, W*.7, H*.3);
+
+  // Left accent bar
+  ctx.fillStyle = accent;
+  ctx.fillRect(xBar, H*.06, 10, H*.26);
+
+  // Eyebrow
+  ctx.fillStyle = accent;
+  ctx.font = `700 ${Math.round(H*.022)}px Montserrat, sans-serif`;
+  _setLS(ctx, 5);
+  ctx.fillText(eyebrow.toUpperCase(), xText, H*.075);
+  _setLS(ctx, 0);
+
+  // Verse
+  ctx.fillStyle = 'white';
+  ctx.font = `700 ${Math.round(H*.042)}px Montserrat, sans-serif`;
+  const afterVerse = wrapText(ctx, verse, xText, H*.125, W*.82, H*.058);
+
+  // Reference
+  ctx.fillStyle = accent;
+  ctx.font = `${Math.round(H*.036)}px Anton, sans-serif`;
+  _setLS(ctx, 4);
+  ctx.fillText(ref.toUpperCase(), xText, Math.min(afterVerse + H*.025, H*.32));
+  _setLS(ctx, 0);
+}
+
+// ── SERIES TITLE ──────────────────────────
+function drawTitle(ctx, accent) {
+  const micro   = 'Junction Church · Series';
+  const line1   = _v('e_seriesName',  'Keep The');
+  const line2   = _v('e_seriesAccent','Main Thing');
+  const line3   = _v('e_seriesLine3', 'The Main Thing');
+  const speaker = _v('e_speaker',     '');
+
+  const xText = W*.06;
+
+  // Micro series label
+  ctx.fillStyle = 'rgba(255,255,255,.5)';
+  ctx.font = `700 ${Math.round(H*.018)}px Montserrat, sans-serif`;
+  _setLS(ctx, 6);
+  ctx.fillText(micro.toUpperCase(), xText, H*.07);
+  _setLS(ctx, 0);
+
+  // Big title — 3 lines, middle line in accent
+  ctx.font = `${Math.round(H*.11)}px Anton, sans-serif`;
+  const lineH = H*.1;
+  let y = H*.11;
+  ctx.fillStyle = 'white'; ctx.fillText(line1.toUpperCase(), xText, y);
+  y += lineH;
+  ctx.fillStyle = accent;  ctx.fillText(line2.toUpperCase(), xText, y);
+  y += lineH;
+  ctx.fillStyle = 'white'; ctx.fillText(line3.toUpperCase(), xText, y);
+
+  // Speaker / date
+  ctx.fillStyle = 'rgba(255,255,255,.45)';
+  ctx.font = `700 ${Math.round(H*.02)}px Montserrat, sans-serif`;
+  _setLS(ctx, 4);
+  ctx.fillText(speaker.toUpperCase(), xText, y + lineH*1.05);
+  _setLS(ctx, 0);
+}
+
+// ── POINT ─────────────────────────────────
+function drawPoint(ctx, accent, ptIdx) {
+  if(ptIdx == null) ptIdx = curPointIdx;
+  const pt = points[ptIdx] || points[0];
+  const label = pt.label  || 'Point 01 —';
+  const l1    = pt.line1  || '';
+  const l2    = pt.accent || '';
+  const l3    = pt.line3  || '';
+
+  const xText = W*.06;
+
+  // Label
+  ctx.fillStyle = accent;
+  ctx.font = `700 ${Math.round(H*.02)}px Montserrat, sans-serif`;
+  _setLS(ctx, 5);
+  ctx.fillText(label.toUpperCase(), xText, H*.065);
+  _setLS(ctx, 0);
+
+  // Big point text — 3 lines
+  ctx.font = `${Math.round(H*.1)}px "League Gothic", sans-serif`;
+  const lineH = H*.09;
+  let y = H*.1;
+  ctx.fillStyle = 'white'; ctx.fillText(l1.toUpperCase(), xText, y);
+  y += lineH;
+  ctx.fillStyle = accent;  ctx.fillText(l2.toUpperCase(), xText, y);
+  y += lineH;
+  ctx.fillStyle = 'white'; ctx.fillText(l3.toUpperCase(), xText, y);
+}
+
+// ── QUOTE ─────────────────────────────────
+function drawQuote(ctx, accent) {
+  const quote   = _v('e_quote', '');
+  const author  = _v('e_quoteAuthor', '');
+
+  const xText = W*.06;
+
+  // Big quote mark
+  ctx.fillStyle = accent;
+  ctx.globalAlpha = .25;
+  ctx.font = `${Math.round(H*.14)}px Anton, sans-serif`;
+  ctx.fillText('"', xText, H*.03);
+  ctx.globalAlpha = 1;
+
+  // Quote body — italic bold
+  ctx.fillStyle = 'white';
+  ctx.font = `italic 700 ${Math.round(H*.04)}px Montserrat, sans-serif`;
+  const afterQuote = wrapText(ctx, quote, xText, H*.16, W*.84, H*.056);
+
+  // Attribution
+  ctx.fillStyle = 'rgba(255,255,255,.55)';
+  ctx.font = `700 ${Math.round(H*.02)}px Montserrat, sans-serif`;
+  _setLS(ctx, 4);
+  ctx.fillText(author.toUpperCase(), xText, Math.min(afterQuote + H*.025, H*.33));
+  _setLS(ctx, 0);
+}
+
+// ── WATERMARK (all slides) ────────────────
+function drawWatermark(ctx) {
+  const wmText = _v('e_watermark', 'Keep The Main Thing');
+  ctx.globalAlpha = .5;
+  ctx.fillStyle = 'white';
+  // little line
+  ctx.fillRect(W*.895, H*.895, W*.055, 2);
+  // text
+  ctx.font = `${Math.round(H*.02)}px Anton, sans-serif`;
+  _setLS(ctx, 3);
+  const metrics = ctx.measureText(wmText.toUpperCase());
+  ctx.fillText(wmText.toUpperCase(), W*.95 - metrics.width, H*.915);
+  _setLS(ctx, 0);
+  ctx.globalAlpha = 1;
+}
+
+// Returns the y-coordinate immediately below the last rendered line
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  if(!text) return y;
+  const words = String(text).split(/\s+/);
+  let line = '';
+  let cy = y;
+  for(let n=0; n<words.length; n++){
+    const testLine = line + words[n] + ' ';
+    if(ctx.measureText(testLine).width > maxWidth && n > 0) {
+      ctx.fillText(line.trim(), x, cy);
+      line = words[n] + ' ';
+      cy += lineHeight;
+    } else { line = testLine; }
+  }
+  ctx.fillText(line.trim(), x, cy);
+  return cy + lineHeight;
+}
+
+// ══════════════════════════════════
+// HEADER PERSISTENCE
+// ══════════════════════════════════
+const HDR_KEY = 'junction_hdr_title';
+function initEditableHeader() {
+  const h1 = document.querySelector('.hdr-text h1');
+  if(!h1) return;
+  const saved = localStorage.getItem(HDR_KEY);
+  if(saved) h1.textContent = saved;
+  const save = () => {
+    const txt = h1.textContent.trim();
+    if(txt) localStorage.setItem(HDR_KEY, txt);
+    else localStorage.removeItem(HDR_KEY);
+  };
+  h1.addEventListener('blur', save);
+  h1.addEventListener('input', save);
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+window.onload = () => {
+  initEditableHeader();
+  renderPointFields();
+  renderAll();
+};
+</script>
+</body>
+</html>
