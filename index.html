@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Junction — Keep The Main Thing</title>
+<title>Junction — Preaching Slides — v5.4</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=League+Gothic&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -169,7 +169,7 @@ canvas.bgc { position:absolute; inset:0; width:100%; height:100%; }
 <div class="hdr">
   <div class="jbadge">JUNCTION</div>
   <div class="hdr-text">
-    <h1 contenteditable="true" spellcheck="false" title="Click to edit series title" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">KEEP THE MAIN THING THE MAIN THING</h1>
+    <h1 contenteditable="true" spellcheck="false" title="Click to edit series title" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">PREACHING SLIDES</h1>
     <p>SERIES ARTWORK · PREACHER-SAFE ZONES · 16:10 · PROPRESENTER</p>
   </div>
   <div class="safe-badge">✓ PREACHER SAFE</div>
@@ -177,7 +177,7 @@ canvas.bgc { position:absolute; inset:0; width:100%; height:100%; }
 <div class="tabs">
   <div class="stab on" onclick="showTab('scripture',this)">📖 Scripture</div>
   <div class="stab" onclick="showTab('title',this)">🎯 Series Title</div>
-  <div class="stab" onclick="showTab('point',this)">💡 Point Header</div>
+  <div class="stab" onclick="showTab('point',this)">💡 Slide</div>
   <div class="stab" onclick="showTab('quote',this)">💬 Quote</div>
   <div class="stab" onclick="showTab('guide',this)">📋 ProPresenter Guide</div>
 </div>
@@ -244,7 +244,15 @@ canvas.bgc { position:absolute; inset:0; width:100%; height:100%; }
         <textarea class="einput etarea" id="e_verse" rows="4" oninput="updateText()">"For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."</textarea></div>
       <div class="egroup"><label class="elabel">Reference</label>
         <input class="einput" id="e_ref" value="John 3:16" oninput="updateText()"></div>
+      <div class="egroup">
+        <label class="elabel">⚡ Bulk import — paste passage with verse numbers</label>
+        <textarea class="einput etarea" id="e_bulkVerses" rows="4" placeholder="1 Now Moses was tending the flock...&#10;2 There the angel of the Lord appeared..." style="min-height:72px;"></textarea>
+        <button type="button" id="bulkBtn" class="pt-add-btn" onclick="importBulkVerses()" style="width:100%;margin-top:5px;">⚡ GENERATE ONE SLIDE PER VERSE</button>
+        <p id="bulkStatus" style="font-size:9px;color:#444;line-height:1.4;margin-top:4px;">Each verse becomes its own slide. Reference on each slide becomes "Book Ch:Verse".</p>
+      </div>
       <div class="sbl">🎯 Series Title</div>
+      <div class="egroup"><label class="elabel">Micro label (eyebrow)</label>
+        <input class="einput" id="e_seriesMicro" value="Junction Church · Series" oninput="updateText()"></div>
       <div class="egroup"><label class="elabel">Series name</label>
         <input class="einput" id="e_seriesName" value="Keep The" oninput="updateText()"></div>
       <div class="egroup"><label class="elabel">Accent word</label>
@@ -254,7 +262,7 @@ canvas.bgc { position:absolute; inset:0; width:100%; height:100%; }
       <div class="egroup"><label class="elabel">Speaker / date</label>
         <input class="einput" id="e_speaker" value="PS ROY TODD · SUNDAY 10AM" oninput="updateText()"></div>
       <div class="sbl" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>💡 Points (<span id="ptCountLabel">1</span>)</span>
+        <span>💡 Slides (<span id="ptCountLabel">1</span>)</span>
         <button class="pt-add-btn" onclick="addPoint()">+ ADD</button>
       </div>
       <div id="pointFieldsContainer"></div>
@@ -315,7 +323,7 @@ canvas.bgc { position:absolute; inset:0; width:100%; height:100%; }
         <canvas class="bgc" id="titleCanvas" width="1920" height="1200"></canvas>
         <div class="sc" id="titleAtmo"></div>
         <div class="title-content layout-left">
-          <div class="series-micro">Junction Church · Series</div>
+          <div class="series-micro" id="seriesMicroPreview">Junction Church · Series</div>
           <div class="title-big">
             Keep The<br>
             <span id="titleAccent" style="color:#FFD400">Main Thing</span><br>
@@ -336,10 +344,10 @@ canvas.bgc { position:absolute; inset:0; width:100%; height:100%; }
       </div>
     </div>
     <div class="spanel" id="tab-point">
-      <p class="plabel">POINT HEADER · TOP ZONE ONLY</p>
+      <p class="plabel">NUMBERED SLIDE · TOP ZONE ONLY</p>
       <div class="pt-nav">
         <button class="pt-nav-btn" id="ptPrev" onclick="navPoint(-1)">◀</button>
-        <span class="pt-nav-label" id="ptNavLabel">POINT 1 / 1</span>
+        <span class="pt-nav-label" id="ptNavLabel">SLIDE 1 / 1</span>
         <button class="pt-nav-btn" id="ptNext" onclick="navPoint(1)">▶</button>
         <button class="zone-btn on" id="zonePointToggle" onclick="toggleZonePoint()" style="margin-left:auto">◉ SHOW SAFE ZONES</button>
       </div>
@@ -347,7 +355,7 @@ canvas.bgc { position:absolute; inset:0; width:100%; height:100%; }
         <canvas class="bgc" id="pointCanvas" width="1920" height="1200"></canvas>
         <div class="sc" id="pointAtmo"></div>
         <div class="point-content">
-          <div class="pt-label" id="ptLabel" style="color:#FFD400">Point 01 —</div>
+          <div class="pt-label" id="ptLabel" style="color:#FFD400">01 —</div>
           <div class="pt-text">Keep the<br><span id="ptAccent" style="color:#FFD400">MAIN THING</span><br>the main thing</div>
         </div>
         <div class="series-watermark"><div class="sw-line"></div><div class="sw-text">Keep The Main Thing</div></div>
@@ -405,8 +413,11 @@ let curAccent = '#FFD400';
 let curDark = 0.68;
 let curTitleLayout = 'left'; // 'left' | 'center' | 'wide'
 let uploadedImg = null;
+// Bulk-verse mode: parallel array to scripturePages. When set, each index has
+// its own reference string (e.g. "Exodus 3:1"). null = single-verse mode.
+let verseRefs = null;
 const W = 1920, H = 1200;
-let points = [{ label:'Point 01 —', line1:'Keep the', accent:'MAIN THING', line3:'the main thing' }];
+let points = [{ label:'01 —', line1:'Keep the', accent:'MAIN THING', line3:'the main thing' }];
 let curPointIdx = 0;
 // ── SCRIPTURE PAGINATION (NEW) ──
 // Long verses auto-split into multiple slides. Size stays readable.
@@ -782,7 +793,7 @@ function renderPointFields() {
     const active = i === curPointIdx;
     html += `<div class="pt-group" style="${active?'border-color:#FFD400;':''}">
       <div class="pt-group-hdr">
-        <span style="cursor:pointer" onclick="goToPoint(${i})">POINT ${(i+1).toString().padStart(2,'0')}</span>
+        <span style="cursor:pointer" onclick="goToPoint(${i})">SLIDE ${(i+1).toString().padStart(2,'0')}</span>
         ${points.length > 1 ? `<button class="pt-rm-btn" onclick="removePoint(${i})">✕</button>` : ''}
       </div>
       <div class="egroup"><label class="elabel">Label</label><input class="einput" id="e_pt_${i}_label" value="${escH(pt.label)}" oninput="onPointInput(${i})"></div>
@@ -814,14 +825,14 @@ function addPoint() {
   if(points.length >= 10) return;
   savePointFields();
   const n = points.length + 1;
-  points.push({ label:`Point ${n.toString().padStart(2,'0')} —`, line1:'', accent:'', line3:'' });
+  points.push({ label:`${n.toString().padStart(2,'0')} —`, line1:'', accent:'', line3:'' });
   curPointIdx = points.length - 1;
   renderPointFields(); updatePointPreview();
 }
 function removePoint(idx) {
   if(points.length <= 1) return;
   savePointFields(); points.splice(idx, 1);
-  points.forEach((pt, i) => { pt.label = `Point ${(i+1).toString().padStart(2,'0')} —`; });
+  points.forEach((pt, i) => { pt.label = `${(i+1).toString().padStart(2,'0')} —`; });
   if(curPointIdx >= points.length) curPointIdx = points.length - 1;
   renderPointFields(); updatePointPreview();
 }
@@ -831,7 +842,7 @@ function updatePointNav() {
   const label = document.getElementById('ptNavLabel');
   const prev = document.getElementById('ptPrev');
   const next = document.getElementById('ptNext');
-  if(label) label.textContent = `POINT ${curPointIdx+1} / ${points.length}`;
+  if(label) label.textContent = `SLIDE ${curPointIdx+1} / ${points.length}`;
   if(prev) prev.disabled = curPointIdx === 0;
   if(next) next.disabled = curPointIdx >= points.length - 1;
 }
@@ -900,6 +911,8 @@ function showSbTab(tab) {
 // Splits verse text into pages that each fit SCRIPTURE_MAX_LINES lines at the
 // export font size. Readable size is preserved; long verses become multi-slide.
 function recalcScripturePages() {
+  // Any direct edit of the verse text exits bulk-verse mode
+  verseRefs = null;
   const verse = (document.getElementById('e_verse')?.value || '').trim();
   if (!verse) { scripturePages = ['']; curScrIdx = 0; return; }
   const tmp = document.createElement('canvas');
@@ -938,13 +951,19 @@ function navScripture(dir) {
 function updateScripturePreview() {
   const tcVerse = document.getElementById('tcVerse');
   if (tcVerse) tcVerse.textContent = scripturePages[curScrIdx] || '';
+  // Update reference preview — per-verse ref if in bulk mode
+  const tcRef = document.getElementById('tcRef');
+  if (tcRef) tcRef.textContent = (verseRefs && verseRefs[curScrIdx]) ? verseRefs[curScrIdx] : (document.getElementById('e_ref')?.value || '');
   const nav = document.getElementById('scriptureNav');
   const label = document.getElementById('scrNavLabel');
   const prev = document.getElementById('scrPrev');
   const next = document.getElementById('scrNext');
   if (scripturePages.length > 1) {
     if (nav) nav.style.display = 'flex';
-    if (label) label.textContent = `PAGE ${curScrIdx+1} / ${scripturePages.length}`;
+    if (label) {
+      const unit = verseRefs ? 'VERSE' : 'PAGE';
+      label.textContent = `${unit} ${curScrIdx+1} / ${scripturePages.length}`;
+    }
     if (prev) prev.disabled = curScrIdx === 0;
     if (next) next.disabled = curScrIdx >= scripturePages.length - 1;
   } else {
@@ -952,14 +971,103 @@ function updateScripturePreview() {
   }
 }
 
+// ── BULK VERSE IMPORT (v5.2) ──
+// Parse a pasted scripture passage into individual verses.
+// Handles BOTH formats:
+//   (A) one verse per line: "1 Now Moses...\n2 There the angel..."
+//   (B) single-line inline markers: "1 Now Moses... 2 There the angel... 3 So Moses thought..."
+// A verse marker = (1-3 digit number, ≤176) preceded by start/whitespace/punctuation,
+// followed by whitespace, followed by an uppercase letter / quote / parenthesis.
+// Numbers that don't match that shape (e.g. "5 people", years, inline counts) are ignored.
+function parseVerses(text) {
+  if (!text || !text.trim()) return [];
+  const verses = [];
+  const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  // Lookbehind: start-of-string OR a non-digit char immediately before the number.
+  // Lookahead: the verse-body starts with an uppercase letter or opening quote/paren.
+  const RE = /(?<=^|[^0-9])(\d{1,3})[.\s)]+(?=[A-Z"'“‘(\[])/g;
+  const MAX_VERSE = 176; // Psalm 119 is the longest chapter; 176 is a hard cap
+
+  for (const line of lines) {
+    const markers = [];
+    let m; RE.lastIndex = 0;
+    while ((m = RE.exec(line)) !== null) {
+      const num = parseInt(m[1], 10);
+      if (num < 1 || num > MAX_VERSE) continue;
+      markers.push({ startIdx: m.index, endIdx: m.index + m[0].length, num });
+    }
+    if (markers.length === 0) {
+      // No markers on this line → continuation of previous verse (or first verse if empty)
+      if (verses.length > 0) verses[verses.length - 1].text += ' ' + line;
+      else verses.push({ num: 1, text: line });
+      continue;
+    }
+    // Text before first marker belongs to the previous verse
+    if (markers[0].startIdx > 0) {
+      const pre = line.slice(0, markers[0].startIdx).trim();
+      if (pre && verses.length > 0) verses[verses.length - 1].text += ' ' + pre;
+    }
+    for (let i = 0; i < markers.length; i++) {
+      const start = markers[i].endIdx;
+      const end = (i + 1 < markers.length) ? markers[i + 1].startIdx : line.length;
+      let vtext = line.slice(start, end).trim();
+      // Defensive scrub: strip any leading digits that somehow survived
+      vtext = vtext.replace(/^\s*\d{1,3}[.\s)]+/, '').trim();
+      if (vtext) verses.push({ num: markers[i].num, text: vtext });
+    }
+  }
+
+  return verses.length ? verses : [{ num: 1, text: text.trim() }];
+}
+
+function importBulkVerses() {
+  const raw = document.getElementById('e_bulkVerses')?.value || '';
+  const verses = parseVerses(raw);
+  if (!verses.length) {
+    alert('No verses detected.\n\nPaste verse-numbered text like:\n\n1 Now Moses was tending...\n2 There the angel of the Lord...');
+    return;
+  }
+  // Derive "Book Chapter" prefix from the current reference field (e.g. "Exodus 3:1-6" → "Exodus 3")
+  const curRef = (document.getElementById('e_ref')?.value || '').trim();
+  const refMatch = curRef.match(/^(.+?)\s*(\d+)\s*:/);
+  const bookChapter = refMatch ? (refMatch[1].trim() + ' ' + refMatch[2]) : (curRef.split(':')[0] || 'Scripture');
+  // Replace scripturePages + set per-verse refs
+  scripturePages = verses.map(v => v.text);
+  verseRefs = verses.map(v => bookChapter + ':' + v.num);
+  curScrIdx = 0;
+  // Update reference field to show the imported range
+  if (verses.length > 1) {
+    const first = verses[0].num, last = verses[verses.length - 1].num;
+    const refField = document.getElementById('e_ref');
+    if (refField) refField.value = bookChapter + ':' + first + '-' + last;
+  }
+  // Also mirror verse 1 into the verse field so it stays in sync — but avoid triggering recalcScripturePages (which would wipe verseRefs).
+  // We skip updating e_verse to preserve bulk state; user can still see all verses via prev/next nav.
+  updateScripturePreview();
+  // Confirmation for the user — shown in the helper-text slot under the button
+  const status = document.getElementById('bulkStatus');
+  if (status) {
+    status.style.color = '#4CAF50';
+    status.textContent = `✓ Parsed ${verses.length} verse${verses.length===1?'':'s'} — navigate with ◀ ▶ above the preview.`;
+    setTimeout(() => {
+      status.style.color = '#444';
+      status.textContent = 'Each verse becomes its own slide. Reference on each slide becomes "Book Ch:Verse".';
+    }, 6000);
+  }
+}
+
 function updateText() {
   const eyebrow = document.getElementById('e_eyebrow').value;
-  const ref     = document.getElementById('e_ref').value;
   document.getElementById('tcEyebrow').textContent = eyebrow;
-  document.getElementById('tcRef').textContent     = ref;
-  // Scripture verse — recompute pages, show current page in preview
+  // Scripture verse — recompute pages (clears verseRefs), show current page in preview.
+  // updateScripturePreview now owns the tcRef update (per-verse aware), so we don't set it here.
   recalcScripturePages();
   updateScripturePreview();
+
+  // Sync the series micro-label preview (new editable eyebrow for title slide)
+  const microVal = document.getElementById('e_seriesMicro')?.value || 'Junction Church · Series';
+  const microPrev = document.getElementById('seriesMicroPreview');
+  if (microPrev) microPrev.textContent = microVal;
 
   // Series title — separator depends on layout. Wide = single line with spaces.
   const sep = curTitleLayout === 'wide' ? ' ' : '<br>';
@@ -992,7 +1100,11 @@ function toggleZoneTitle() { const ov = document.getElementById('zoneTitleOverla
 function toggleZonePoint() { const ov = document.getElementById('zonePointOverlay'); const btn = document.getElementById('zonePointToggle'); const show = !ov.classList.contains('show'); ov.classList.toggle('show', show); btn.classList.toggle('on', show); btn.textContent = show ? '◉ SHOW SAFE ZONES' : '○ SHOW SAFE ZONES'; }
 function toggleZoneQuote() { const ov = document.getElementById('zoneQuoteOverlay'); const btn = document.getElementById('zoneQuoteToggle'); const show = !ov.classList.contains('show'); ov.classList.toggle('show', show); btn.classList.toggle('on', show); btn.textContent = show ? '◉ SHOW SAFE ZONES' : '○ SHOW SAFE ZONES'; }
 
-function _v(id, fallback) { const el = document.getElementById(id); return (el && el.value != null && el.value !== '') ? el.value : (fallback||''); }
+function _v(id, fallback) {
+  // v5.4: empty user input = empty output. Fallback only if the DOM element is missing.
+  const el = document.getElementById(id);
+  return el ? el.value : (fallback || '');
+}
 function _setLS(ctx, px) { try { ctx.letterSpacing = px + 'px'; } catch(e){} }
 
 function downloadSlide() {
@@ -1051,8 +1163,10 @@ function renderSlideToPNG(slideType, filename, ptIdx, scrIdx) {
 
 function drawScripture(ctx, accent, pageIdx) {
   const eyebrow = _v('e_eyebrow', 'Scripture');
-  const ref     = _v('e_ref', '');
   const layout  = curTitleLayout;
+  // Per-verse reference takes precedence when bulk-import mode is active
+  const _idxForRef = (pageIdx != null) ? pageIdx : curScrIdx;
+  const ref = (verseRefs && verseRefs[_idxForRef]) ? verseRefs[_idxForRef] : _v('e_ref', '');
   // Use the pre-split page text. Falls back to raw verse if pages not computed.
   if (!scripturePages || scripturePages.length === 0 || (scripturePages.length === 1 && !scripturePages[0])) {
     recalcScripturePages();
@@ -1152,9 +1266,9 @@ function drawScripture(ctx, accent, pageIdx) {
   _setLS(ctx, 4); ctx.fillText(ref.toUpperCase(), xText, refY); _setLS(ctx, 0);
 }
 
-// ── SERIES TITLE — three layouts (NEW v5) ──
+// ── SERIES TITLE — three layouts (v5.1: editable eyebrow + auto-fit LEFT/CENTER) ──
 function drawTitle(ctx, accent) {
-  const micro   = 'Junction Church · Series';
+  const micro   = _v('e_seriesMicro', 'Junction Church · Series');
   const line1   = _v('e_seriesName',  'Keep The');
   const line2   = _v('e_seriesAccent','Main Thing');
   const line3   = _v('e_seriesLine3', 'The Main Thing');
@@ -1162,8 +1276,8 @@ function drawTitle(ctx, accent) {
   const layout  = curTitleLayout;
 
   if (layout === 'wide') {
-    // One line CENTRED across the top third, auto-fit to width
-    const padL = W*.05, padR = W*.05;
+    // One line CENTRED across the top, ratio-scaled to FILL available width (v5.3)
+    const padL = W*.04, padR = W*.04; // tighter padding to maximise usable width
     const availWidth = W - padL - padR;
     const spacer = '  '; // two spaces between pieces so the accent word is clearly grouped
     const s1 = line1.toUpperCase() + spacer;
@@ -1177,10 +1291,16 @@ function drawTitle(ctx, accent) {
     ctx.font = `700 ${Math.round(H*.018)}px Montserrat, sans-serif`;
     _setLS(ctx, 6); ctx.fillText(micro.toUpperCase(), W/2, H*.05); _setLS(ctx, 0);
 
-    // Fit title font-size to the available width
-    let fontSize = Math.round(H*.13);
+    // Ratio-based fit: measure at reference size, scale to fill availWidth (v5.3)
+    const testSize = Math.round(H * .13);
+    ctx.font = `${testSize}px Anton, sans-serif`;
+    const measured = ctx.measureText(full).width || 1;
+    let fontSize = Math.round(testSize * (availWidth / measured));
+    // Cap: not bigger than 28% of height (keeps 2-char titles reasonable), not smaller than 5%
+    fontSize = Math.max(Math.round(H * .05), Math.min(fontSize, Math.round(H * .28)));
     ctx.font = `${fontSize}px Anton, sans-serif`;
-    while (ctx.measureText(full).width > availWidth && fontSize > 24) {
+    // Safety loop: font-metric variance may leave it slightly over
+    while (ctx.measureText(full).width > availWidth && fontSize > Math.round(H * .05)) {
       fontSize -= 2;
       ctx.font = `${fontSize}px Anton, sans-serif`;
     }
@@ -1211,7 +1331,9 @@ function drawTitle(ctx, accent) {
     return;
   }
 
-  // LEFT or CENTER stacked 3-line layout
+  // LEFT or CENTER stacked 3-line layout — AUTO-FIT (v5.1)
+  // Size the title so the widest of the 3 lines fits the available width.
+  // Fixes the "Moses" bug: short titles now scale UP, long ones scale DOWN.
   const isCenter = layout === 'center';
   const xText = isCenter ? W/2 : W*.06;
   ctx.textAlign = isCenter ? 'center' : 'left';
@@ -1220,31 +1342,42 @@ function drawTitle(ctx, accent) {
   ctx.font = `700 ${Math.round(H*.018)}px Montserrat, sans-serif`;
   _setLS(ctx, 6); ctx.fillText(micro.toUpperCase(), xText, H*.07); _setLS(ctx, 0);
 
-  ctx.font = `${Math.round(H*.11)}px Anton, sans-serif`;
-  const lineH = H*.1;
+  const titleLines = [line1.toUpperCase(), line2.toUpperCase(), line3.toUpperCase()];
+  const availW = W * .88;           // usable width for title
+  const maxSize = Math.round(H*.16); // generous upper cap (up from old fixed .11)
+  const minSize = Math.round(H*.055);
+  let fontSize = maxSize;
+  ctx.font = `${fontSize}px Anton, sans-serif`;
+  let widest = Math.max(...titleLines.map(l => ctx.measureText(l).width));
+  while (widest > availW && fontSize > minSize) {
+    fontSize -= 2;
+    ctx.font = `${fontSize}px Anton, sans-serif`;
+    widest = Math.max(...titleLines.map(l => ctx.measureText(l).width));
+  }
+  const lineH = fontSize * 0.92;
   let y = H*.11;
-  ctx.fillStyle = 'white'; ctx.fillText(line1.toUpperCase(), xText, y); y += lineH;
-  ctx.fillStyle = accent;  ctx.fillText(line2.toUpperCase(), xText, y); y += lineH;
-  ctx.fillStyle = 'white'; ctx.fillText(line3.toUpperCase(), xText, y);
+  ctx.fillStyle = 'white'; ctx.fillText(titleLines[0], xText, y); y += lineH;
+  ctx.fillStyle = accent;  ctx.fillText(titleLines[1], xText, y); y += lineH;
+  ctx.fillStyle = 'white'; ctx.fillText(titleLines[2], xText, y);
 
   ctx.fillStyle = 'rgba(255,255,255,.45)';
   ctx.font = `700 ${Math.round(H*.02)}px Montserrat, sans-serif`;
-  _setLS(ctx, 4); ctx.fillText(speaker.toUpperCase(), xText, y + lineH*1.05); _setLS(ctx, 0);
+  _setLS(ctx, 4); ctx.fillText(speaker.toUpperCase(), xText, y + lineH*.7); _setLS(ctx, 0);
   ctx.textAlign = 'left'; // reset for other callers
 }
 
 function drawPoint(ctx, accent, ptIdx) {
   if(ptIdx == null) ptIdx = curPointIdx;
   const pt = points[ptIdx] || points[0];
-  const label = pt.label  || 'Point 01 —';
+  const label = pt.label  || '01 —';
   const l1    = pt.line1  || '';
   const l2    = pt.accent || '';
   const l3    = pt.line3  || '';
   const layout = curTitleLayout;
 
   if (layout === 'wide') {
-    // CENTERED single-line point across the top third
-    const padL = W*.05, padR = W*.05;
+    // CENTERED single-line across the top, ratio-scaled to FILL available width (v5.3)
+    const padL = W*.04, padR = W*.04;
     const availWidth = W - padL - padR;
     const spacer = '  ';
     const s1 = l1.toUpperCase() + spacer;
@@ -1256,10 +1389,14 @@ function drawPoint(ctx, accent, ptIdx) {
     ctx.fillStyle = accent;
     ctx.font = `700 ${Math.round(H*.02)}px Montserrat, sans-serif`;
     _setLS(ctx, 5); ctx.fillText(label.toUpperCase(), W/2, H*.05); _setLS(ctx, 0);
-    // Fit size
-    let fontSize = Math.round(H*.11);
+    // Ratio-based fit: measure at reference size, scale to fill availWidth (v5.3)
+    const testSize = Math.round(H * .11);
+    ctx.font = `${testSize}px "League Gothic", sans-serif`;
+    const measured = ctx.measureText(full).width || 1;
+    let fontSize = Math.round(testSize * (availWidth / measured));
+    fontSize = Math.max(Math.round(H * .05), Math.min(fontSize, Math.round(H * .28)));
     ctx.font = `${fontSize}px "League Gothic", sans-serif`;
-    while (ctx.measureText(full).width > availWidth && fontSize > 24) {
+    while (ctx.measureText(full).width > availWidth && fontSize > Math.round(H * .05)) {
       fontSize -= 2;
       ctx.font = `${fontSize}px "League Gothic", sans-serif`;
     }
@@ -1277,7 +1414,7 @@ function drawPoint(ctx, accent, ptIdx) {
     return;
   }
 
-  // LEFT or CENTER stacked 3-line layout
+  // LEFT or CENTER stacked 3-line layout — AUTO-FIT (v5.1)
   const isCenter = layout === 'center';
   const xText = isCenter ? W/2 : W*.06;
   ctx.textAlign = isCenter ? 'center' : 'left';
@@ -1285,11 +1422,24 @@ function drawPoint(ctx, accent, ptIdx) {
   ctx.fillStyle = accent;
   ctx.font = `700 ${Math.round(H*.02)}px Montserrat, sans-serif`;
   _setLS(ctx, 5); ctx.fillText(label.toUpperCase(), xText, H*.065); _setLS(ctx, 0);
-  ctx.font = `${Math.round(H*.1)}px "League Gothic", sans-serif`;
-  const lineH = H*.09; let y = H*.1;
-  ctx.fillStyle = 'white'; ctx.fillText(l1.toUpperCase(), xText, y); y += lineH;
-  ctx.fillStyle = accent;  ctx.fillText(l2.toUpperCase(), xText, y); y += lineH;
-  ctx.fillStyle = 'white'; ctx.fillText(l3.toUpperCase(), xText, y);
+
+  const ptLines = [l1.toUpperCase(), l2.toUpperCase(), l3.toUpperCase()];
+  const availW = W * .88;
+  const maxSize = Math.round(H*.14);
+  const minSize = Math.round(H*.05);
+  let fontSize = maxSize;
+  ctx.font = `${fontSize}px "League Gothic", sans-serif`;
+  let widest = Math.max(...ptLines.map(l => ctx.measureText(l).width));
+  while (widest > availW && fontSize > minSize) {
+    fontSize -= 2;
+    ctx.font = `${fontSize}px "League Gothic", sans-serif`;
+    widest = Math.max(...ptLines.map(l => ctx.measureText(l).width));
+  }
+  const lineH = fontSize * 0.88;
+  let y = H*.1;
+  ctx.fillStyle = 'white'; ctx.fillText(ptLines[0], xText, y); y += lineH;
+  ctx.fillStyle = accent;  ctx.fillText(ptLines[1], xText, y); y += lineH;
+  ctx.fillStyle = 'white'; ctx.fillText(ptLines[2], xText, y);
   ctx.textAlign = 'left'; // reset
 }
 
@@ -1309,7 +1459,9 @@ function drawQuote(ctx, accent) {
 }
 
 function drawWatermark(ctx) {
-  const wmText = _v('e_watermark', 'Keep The Main Thing');
+  // v5.4: empty watermark field = no watermark at all (line + text)
+  const wmText = _v('e_watermark', '');
+  if (!wmText || !wmText.trim()) return;
   ctx.globalAlpha = .5; ctx.fillStyle = 'white';
   ctx.fillRect(W*.895, H*.895, W*.055, 2);
   ctx.font = `${Math.round(H*.02)}px Anton, sans-serif`;
